@@ -12,14 +12,14 @@ Here is a list of some of the features supported out of the box.
   
 * Switching app environments: dev, production, staging, etc
 * Automatically load a config file based on the environment
-* Versatile and flexible configuration format: TOML files
+* Versatile and flexible configuration format: the TOML files
 * Flexible URL routing with placeholders, hosts and reg-exp
 * Declarative API for endpoint definition, with metadata
 * Serving inventory of available APIs defined in the app
 * Optional built-in UI for browsing and testing app APIs
 * Structured logger is automatically available in the app
 * Middleware support for the endpoints and endpoint groups
-* Toolkit with essentials for authentication & access control
+* Shipped with essentials for authentication & access control
 * Auto connecting to multiple DBs by just adding config sections
 * Support for MongoDB & PostgreSQL databases out of the box
 * High performance and efficient memory consumption

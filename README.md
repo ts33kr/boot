@@ -12,6 +12,7 @@ Here is a list of some of the features supported out of the box.
   
 * Switching app environments: dev, production, staging, etc
 * Automatically load a config file based on the environment
+* Flexible URL routing with placeholders, hosts and reg-exp
 * Declarative API for endpoint definition, with metadata
 * Serving inventory of available APIs defined in the app
 * Optional built-in UI for browsing and testing app APIs

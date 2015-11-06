@@ -14,7 +14,9 @@ Here is a list of some of the features supported out of the box.
 * Automatically load a config file based on the environment
 * Declarative API for endpoint definition, with metadata
 * Serving inventory of available APIs defined in the app
+* Optional built-in UI for browsing and testing app APIs
 * Structured logger is automatically available in the app
 * Middleware support for the endpoints and endpoint groups
-* High performance and as efficient memory consumption
+* Toolkit with essentials for authentication & access control
+* High performance and efficient memory consumption
 * Efficiently serving static resources (asset files)

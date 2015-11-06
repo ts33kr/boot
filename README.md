@@ -21,6 +21,6 @@ Here is a list of some of the features supported out of the box.
 * Middleware support for the endpoints and endpoint groups
 * Shipped with essentials for authentication & access control
 * Auto connecting to multiple DBs by just adding config sections
-* Support for MongoDB & PostgreSQL databases out of the box
+* Support for MongoDB & major SQL databases out of the box
 * High performance and efficient memory consumption
 * Efficiently serving static resources (asset files)

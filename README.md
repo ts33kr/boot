@@ -11,10 +11,9 @@ that is necessary to power a production application and its deployment.
 Here is a list of some of the features supported out of the box.
   
 * Switching app environments: dev, production, staging, etc
-* Automatically load a config file based on the environment
-* Versatile and flexible configuration format: the TOML files
+* Automatically load a config (TOML) based on the environment
 * Flexible URL routing with placeholders, hosts and reg-exp
-* Declarative API for endpoint definition, with metadata
+* Declarative API defining the endpoints, with metadata
 * Serving inventory of available APIs defined in the app
 * Optional built-in UI for browsing and testing app APIs
 * Structured logger is automatically available in the app

@@ -95,6 +95,13 @@ type App struct {
     // the time of when exactly the application was launched.
     Booted time.Time
 
+    // Slice of HTTP servers that will be used to server application
+    // instance. Servers are automatically created by the framework
+    // for every corresponding section in the config file. This is
+    // needed for applications that must be served on multiple ports
+    // or network interfaces at the same time, within one process.
+    Servers []*http.Server
+
     // Slice of providers installed within this application. Provider
     // is an entity, with a piece of code attached, that provides some
     // kind of functionality for the application, such as: a database
@@ -108,11 +115,4 @@ type App struct {
     // but rather through the provided API to manage services within
     // an application instance; please refer to it for details.
     Services []*Service
-
-    // Slice of HTTP servers that will be used to server application
-    // instance. Servers are automatically created by the framework
-    // for every corresponding section in the config file. This is
-    // needed for applications that must be served on multiple ports
-    // or network interfaces at the same time, within one process.
-    Servers []*http.Server
 }

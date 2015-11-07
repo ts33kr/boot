@@ -28,14 +28,31 @@ import "net/http"
 import "github.com/pelletier/go-toml"
 import "github.com/satori/go.uuid"
 
+// Function that is used to build up a service instance. It takes a
+// pointer to the service that has been pre-allocated and preliminary
+// initialized before invoking the maker function, passing it through.
+// Service makers are going to be invoked during application launch.
+// Please refer to the service API for more information on usage.
+type MakeService func (*Service)
+
+// Function that is used to build up a endpoint instance. It takes a
+// pointer to the endpoint that has been pre-allocated and preliminary
+// initialized before invoking the maker function, passing it through.
+// endpoint makers are going to be invoked during application launch.
+// Please refer to the endpoint API for more information on usage.
+type MakeEndpoint func (*Endpoint)
+
+// Function that is used to build up a provider instance. It takes a
+// pointer to the provider that has been pre-allocated and preliminary
+// initialized before invoking the maker function, passing it through.
+// provider makers are going to be invoked during application launch.
+// Please refer to the provider API for more information on usage.
+type MakeProvider func (*Provider)
+
 type Service struct {}
 type Endpoint struct {}
 type Provider struct {}
 type Context struct {}
-
-type BuildService func (*Service)
-type BuildEndpoint func (*Endpoint)
-type BuildProvider func (*Provider)
 
 type App struct {
 

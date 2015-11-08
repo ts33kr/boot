@@ -30,6 +30,11 @@ package boot
 // of application logic that is derived from an app and a context.
 type Logic func (*Context, *App)
 
+// Final destination of where an HTTP request lands when it comes via
+// the web application. This data structure holds the implementation
+// function as well as a number of additional fields that accompany
+// the actualy business logic. This data structure should not be
+// created or manipulated directly; use framework API for that.
 type Endpoint struct {
 
     // Description of the endpoint; it should be a short and succinct
@@ -58,5 +63,5 @@ type Endpoint struct {
     // representing. It is invoked to handle an HTTP request matched
     // to this endpoint. A unique per-request context is going to be
     // passed to the function. See Logic type info for details.
-    Implementation Logic
+    Business Logic
 }

@@ -28,6 +28,11 @@ import "net/http"
 import "github.com/pelletier/go-toml"
 import "github.com/satori/go.uuid"
 
+// Core data structure of the framework; represents a web application
+// built with the framework. Contains all the necessary API to create
+// and launch the application, as well as to maintain its lifecyle and
+// the operational business logic. Please refer to the fields of the
+// structure as well as the methods for a detailed information.
 type App struct {
 
     // Slug is a short name that identifies the application instance.

@@ -54,7 +54,7 @@ type App struct {
     // this path to lookup configuration directories, optional static
     // assets and a number of other things it may need. By default, it
     // will be set to the CWD directory that the app was launched in.
-    Root string
+    RootDirectory string
 
     // Short identifier of the logical environment that this instance
     // of the application is running in, such as: production, staging,
@@ -68,7 +68,7 @@ type App struct {
     // application is launched - it gets a new UUID identifier that
     // uniquely represents the specific instance of the application.
     // So every time you start your application, it gets a new ID.
-    Instance uuid.UUID
+    InstanceIdentity uuid.UUID
 
     // General purpose storage for keeping key/value records per the
     // application instance. The storage may be used by the framework

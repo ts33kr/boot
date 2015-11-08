@@ -74,6 +74,20 @@ type Service struct {
     // framework logic. Beware, values are empty-interface typed.
     Storage map[string] interface {}
 
+    // Optional function that will be invoked when the service will
+    // be loaded up into an application instance. The function is typed
+    // as UnbiasedLogic, since it only needs the app structure. The
+    // Service structure itself should be accessible via a closures,
+    // since setting the hook should be setup within MakeService.
+    Loading UnbiasedLogic
+
+    // Optional function that will be invoked when the service will
+    // be stopped (probably when the app will). The function is typed
+    // as UnbiasedLogic, since it only needs the app structure. The
+    // Service structure itself should be accessible via a closures,
+    // since setting the hook should be setup within MakeService.
+    Stopping UnbiasedLogic
+
     // Instant in time when the service was loaded up. A nil value
     // should indicate that current service instance has not yet been
     // loaded up. This value is used internally by the framework in a

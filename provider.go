@@ -25,13 +25,6 @@ package boot
 
 import "time"
 
-// Function that sets something up. Usually, this means setting up the
-// piece of functionality that is offered by the provider. The function
-// is only a derivate of the App structure; it may get and set whatever
-// application data deemed necessery to fullfill its business logic.
-// See the Provider structre and its Business field for more info.
-type Setup func (*App)
-
 // Function that is used to build up a provider instance. It takes a
 // pointer to the provider that has been pre-allocated and preliminary
 // initialized before invoking the maker function, passing it through.
@@ -58,7 +51,7 @@ type Provider struct {
     // offered by the provider. It will be invoked during the app launch
     // process, before the application is actually spinned up with all
     // its services and endpoints. Please set it via special API.
-    Business Setup
+    Setup UnbiasedLogic
 
     // Instant in time when the provider was invoked. The nil value
     // should indicate that current provider instance has not yet been

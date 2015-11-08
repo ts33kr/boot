@@ -68,7 +68,7 @@ type App struct {
     // application is launched - it gets a new UUID identifier that
     // uniquely represents the specific instance of the application.
     // So every time you start your application, it gets a new ID.
-    InstanceIdentity uuid.UUID
+    Reference uuid.UUID
 
     // General purpose storage for keeping key/value records per the
     // application instance. The storage may be used by the framework

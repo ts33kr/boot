@@ -23,4 +23,63 @@
 
 package boot
 
-type Context struct {}
+import "time"
+import "net/http"
+import "github.com/satori/go.uuid"
+
+// Unique object that captures the details needed to invoke the Logic
+// typed function. Usually, context will include an HTTP request object,
+// a means of responding to the HTTP request, as well as references to
+// the App and Service instances that have been used to process this
+// HTTP request up to the point when it has reached the Logic func.
+type Context struct {
+
+    // Instant in time when this context object was created. This value
+    // is used internally by the framework in a multiple of ways; and
+    // may also be used by whoever is interested the time of when the
+    // context object has been instantiated. The value will be set by
+    // the framework, so please do not modify this value directly.
+    Created time.Time
+
+    // Unique identifier of the context instance, conforming to a
+    // version 4 of the commonly known UUID standards. Every time a
+    // new context is created - it gets a new UUID identifier that
+    // uniquely represents the specific instance of the contex, which
+    // effectively represents every HTTP request that comes in.
+    Reference uuid.UUID
+
+    // General purpose storage for keeping key/value records per the
+    // context instance. This storage may be used by the framework
+    // as well as application code, to store and retrieve any sort
+    // of values that may be required by the application logic or the
+    // framework logic. Beware, values are empty-interface typed.
+    Storage map[string] interface {}
+
+    // Pointer to the HTTP requested that triggered the creation of
+    // a context instance. This field will be automatically set by the
+    // framework; please do not manipulate it directly. In some very
+    // rare occasions, it is possible that the pointer will have nil
+    // value, indicating that there was no HTTP context to attach.
+    Request *http.Request
+
+    // Pointer to the HTTP response writer instance that can be used
+    // to write out a response to the incoming HTTP request that has
+    // been wrapped by this context instance. Note that in some very
+    // rare occasions, it is possible that the pointer will have nil
+    // value, indicating that there is no valid response writer.
+    Responder *http.ResponseWriter
+
+    // Pointer to a Service struct instance that a context could be
+    // bound to. Usually, when an HTTP request comes in - it is being
+    // handled by an Endpoint that resides within a Service. In some
+    // rare occasions, it is possible that the pointer will have nil
+    // value, indicating that there was no Service to attach.
+    Service *Service
+
+    // Pointer to an Application structure that represent currently
+    // running application. Normally, there can be only one app struct
+    // within a process; but that's not a strict requirement. Pointer
+    // will always point to a valid App structure and can never be nil.
+    // The framework will take care of setting this pointer up.
+    Application *App
+}

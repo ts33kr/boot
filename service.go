@@ -23,6 +23,8 @@
 
 package boot
 
+import "time"
+
 // Function that is used to build up a service instance. It takes a
 // pointer to the service that has been pre-allocated and preliminary
 // initialized before invoking the maker function, passing it through.
@@ -30,4 +32,45 @@ package boot
 // Please refer to the service API for more information on usage.
 type MakeService func (*Service)
 
-type Service struct {}
+// Service is a group of endpoints that are functionally related. It
+// also serves as a common data exchange bus between the endpoints that
+// belong to the same service. Endpoints may store data in the service,
+// as well as use it for coordination. Besides this, the data structure
+// also contains fields related to the internals of the framework.
+type Service struct {
+
+    // Description of the service; it should be a short and succinct
+    // synopsis of what this service does, as a human readable string.
+    // Keep it short yet descriptive enough to understand a basic idea
+    // of what this service is intended for. This field should be set
+    // via corresponding API; please do not modify this directly.
+    About string
+
+    // Mounting point of the service. All the endpoints in the current
+    // service will share the same URL prefix, as it is specified when
+    // building up a service structure. Therefore, an endpoint that is
+    // installed in this service will only be matched by its pattern if
+    // the HTTP request URL contains the prefix set in the service.
+    Prefix string
+
+    // Slice of endpoints that make up this service. Normally, field
+    // should not be manipulated directly, but rather using framework
+    // API for that. All endpoints within a group should usually share
+    // the same purpose or intention. Please refer to the Endpoint type
+    // for detailed information on the endpoints themselves.
+    Endpoints []*Endpoint
+
+    // General purpose storage for keeping key/value records per the
+    // service instance. This storage may be used by the framework
+    // as well as application code, to store and retrieve any sort
+    // of values that may be required by the service logic or the
+    // framework logic. Beware, values are empty-interface typed.
+    Storage map[string] interface {}
+
+    // Instant in time when the service was loaded up. A nil value
+    // should indicate that current service instance has not yet been
+    // loaded up. This value is used internally by the framework in a
+    // multiple of ways; and may also be used by whoever is interested
+    // the time of when the service was loaded, if it was at all.
+    Loaded time.Time
+}

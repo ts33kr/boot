@@ -28,7 +28,7 @@ package boot
 // resolving (handling) HTTP requests that come into the app. Although
 // this type sigunature could be as well used to represent other kinds
 // of application logic that is derived from an app and a context.
-type EndpointLogic func (*Context, *App)
+type Logic func (*Context, *App)
 
 // Function that is used to build up a endpoint instance. It takes a
 // pointer to the endpoint that has been pre-allocated and preliminary
@@ -58,6 +58,13 @@ type Endpoint struct {
     // This field should not be, as a general, manipulated directly.
     Methods []string
 
+    // Slice of environment names that designates where this endpoint
+    // should be made available. If an application is being booted with
+    // the configured environment that is not in this slice - endpoint
+    // will not be available in that instance of the application. Refer
+    // to the App structure and its Env field for more information.
+    Available []string
+
     // Pattern that is used to match an HTTP request against this
     // endpoint. Usually it is a mask of a partial URL (a path) that
     // contains parameter placeholders and other pettern expressions.
@@ -70,5 +77,5 @@ type Endpoint struct {
     // representing. It is invoked to handle an HTTP request matched
     // to this endpoint. A unique per-request context is going to be
     // passed to the function. See Logic type info for details.
-    Business EndpointLogic
+    Business Logic
 }

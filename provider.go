@@ -23,6 +23,15 @@
 
 package boot
 
+import "time"
+
+// Function that sets something up. Usually, this means setting up the
+// piece of functionality that is offered by the provider. The function
+// is only a derivate of the App structure; it may get and set whatever
+// application data deemed necessery to fullfill its business logic.
+// See the Provider structre and its Business field for more info.
+type Setup func (*App)
+
 // Function that is used to build up a provider instance. It takes a
 // pointer to the provider that has been pre-allocated and preliminary
 // initialized before invoking the maker function, passing it through.
@@ -30,4 +39,31 @@ package boot
 // Please refer to the provider API for more information on usage.
 type MakeProvider func (*Provider)
 
-type Provider struct {}
+// Provider is an entity that proviedes some sort of functionality
+// for the application. Good example of this is a provider that could
+// provide a DB connection for application, by consuming the app config
+// data, opening a connection and then making the DB object accessible
+// via the application storage mechanism. Use the API to create one.
+type Provider struct {
+
+    // Description of the provider; it should be a short and succinct
+    // synopsis of what this provider does, as a human readable string.
+    // Keep it short yet descriptive enough to understand a basic idea
+    // of what this provider is intended for. This field should be set
+    // via corresponding API; please do not modify this directly.
+    About string
+
+    // Implementation of the provider. It should be the Setup typed
+    // function that implements the business logic of the functionality
+    // offered by the provider. It will be invoked during the app launch
+    // process, before the application is actually spinned up with all
+    // its services and endpoints. Please set it via special API.
+    Business Setup
+
+    // Instant in time when the provider was invoked. The nil value
+    // should indicate that current provider instance has not yet been
+    // invoked. This value is used internally by the framework in the
+    // multiple of ways; and may also be used by whoever is interested
+    // the time of when, and if, the provider was invoked.
+    Invoked time.Time
+}

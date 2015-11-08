@@ -53,6 +53,13 @@ type Service struct {
     // the HTTP request URL contains the prefix set in the service.
     Prefix string
 
+    // Slice of environment names that designates where this service
+    // should be made available. If an application is being booted with
+    // the configured environment that is not in this slice - service
+    // will not be available in that instance of the application. Refer
+    // to the App structure and its Env field for more information.
+    Available []string
+
     // Slice of endpoints that make up this service. Normally, field
     // should not be manipulated directly, but rather using framework
     // API for that. All endpoints within a group should usually share

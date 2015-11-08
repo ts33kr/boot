@@ -30,6 +30,13 @@ package boot
 // of application logic that is derived from an app and a context.
 type Logic func (*Context, *App)
 
+// Function that is used to build up a endpoint instance. It takes a
+// pointer to the endpoint that has been pre-allocated and preliminary
+// initialized before invoking the maker function, passing it through.
+// endpoint makers are going to be invoked during application launch.
+// Please refer to the endpoint API for more information on usage.
+type MakeEndpoint func (*Endpoint)
+
 // Final destination of where an HTTP request lands when it comes via
 // the web application. This data structure holds the implementation
 // function as well as a number of additional fields that accompany

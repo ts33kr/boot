@@ -35,11 +35,11 @@ import "github.com/satori/go.uuid"
 // structure as well as the methods for a detailed information.
 type App struct {
 
-    // Slug is a short name that identifies the application instance.
+    // Slug is a short name (or tag) that identifies the application.
     // It is advised to keep it machine & human readable: in a form of
     // of a slug - no spaces, all lower case, et cetera. The framework
     // itself, as well as any other code could use this variable to
-    // unique identify an instance of the running application.
+    // unique identify an instance of the specific application.
     Slug string
 
     // Complement the application slug; represents a version of the

@@ -39,6 +39,13 @@ type MakeService func (*Service)
 // also contains fields related to the internals of the framework.
 type Service struct {
 
+    // Slug is a short name (or tag) that identifies specific service.
+    // It is advised to keep it machine & human readable: in a form of
+    // of a slug - no spaces, all lower case, et cetera. The framework
+    // itself, as well as any other code could use this variable to
+    // unique identify and label some service for referencing it.
+    Slug string
+
     // Description of the service; it should be a short and succinct
     // synopsis of what this service does, as a human readable string.
     // Keep it short yet descriptive enough to understand a basic idea

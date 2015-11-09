@@ -53,6 +53,13 @@ type Provider struct {
     // its services and endpoints. Please set it via special API.
     Setup UnbiasedLogic
 
+    // Optional function that takes care of cleaning up the provider
+    // related resource that might have been allocated or opened during
+    // invoking the provider setup function. Cleanup function will be
+    // automatically called when the application will be terminating.
+    // If there is no cleanup function - nil value should be set.
+    Cleanup UnbiasedLogic
+
     // Instant in time when the provider was invoked. The nil value
     // should indicate that current provider instance has not yet been
     // invoked. This value is used internally by the framework in the

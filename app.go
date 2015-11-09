@@ -52,7 +52,7 @@ func MakeApplication (slug, version string) *App {
     reference := uuid.NewV5(uuid.NamespaceURL, url)
     application := &App { Slug: slug, Version: parsed }
     application.Reference = reference // set UUID
-    application.Stop = &sync.WaitGroup {}
+    application.Finishing = &sync.WaitGroup {}
     return application // prepared app
 }
 
@@ -77,7 +77,7 @@ func (app *App) Boot(env, level, root string) {
     for _, srv := range app.Services { srv.Loading(app) }
     app.Booted = time.Now() // mark as booted
     app.InstallServers() // listen to ports
-    app.Stop.Wait() // wait until stop
+    app.Finishing.Wait() // wait to stop
 }
 
 func (app *App) ServeHTTP(rw *http.ResponseWriter, r *http.Response) {}
@@ -160,7 +160,7 @@ type App struct {
     // be resumed once the application has been gracefully stopped. Do
     // prefer this construct instead of abruptly terminating the app
     // using other, likely more destructive, ways of terminating it.
-    Stop *sync.WaitGroup
+    Finishing *sync.WaitGroup
 
     // Slice of HTTP servers that will be used to server application
     // instance. Servers are automatically created by the framework

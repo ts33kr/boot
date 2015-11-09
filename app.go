@@ -23,13 +23,67 @@
 
 package boot
 
+import "os"
 import "time"
 import "net/http"
+import "path/filepath"
+import "strings"
+import "regexp"
+import "sync"
 
 import "github.com/pelletier/go-toml"
 import "github.com/Sirupsen/logrus"
 import "github.com/satori/go.uuid"
 import "github.com/blang/semver"
+
+// Create and initialize a new application. This is a front gate for
+// the framework, since you should start by creating a new app struct.
+// Every application should have a valid slug (name) and a version. So
+// this function makes sure they have been passed and are all valid.
+// Generally, you should not be creating more than one application.
+func MakeApplication (slug, version string) *App {
+    const url = "https://github.com/ts33kr/boot"
+    const eslug = "slug is not of correct format"
+    const eversion = "version is not valid semver"
+    pattern := regexp.MustCompile("^[a-zA-Z0-9-_]+$")
+    var parsed semver.Version = semver.MustParse(version)
+    if !pattern.MatchString(slug) { panic(eslug) }
+    if parsed.Validate() != nil { panic(eversion) }
+    reference := uuid.NewV5(uuid.NamespaceURL, url)
+    application := &App { Slug: slug, Version: parsed }
+    application.Reference = reference // set UUID
+    application.Stop = &sync.WaitGroup {}
+    return application // prepared app
+}
+
+// Launch the application. This means that the application should have
+// all the services installed and all the necessary configurations done
+// before invoking the boot sequence. This method will then carry out
+// the boot sequence, which involves all the necessary setups. It will
+// block until the application will be gracefully terminated.
+func (app *App) Boot(env, level, root string) {
+    const eenv = "environment name must be 1 word"
+    const estat = "could not open the specified root"
+    pattern := regexp.MustCompile("^[a-zA-Z0-9]+$")
+    parsedLevel, err := logrus.ParseLevel(level)
+    if err != nil { panic("wrong logging level") }
+    if !pattern.MatchString(env) { panic(eenv) }
+    if _, e := os.Stat(root); e != nil { panic(estat) }
+    app.Journal = app.PrepareJournal(parsedLevel)
+    app.Env = strings.ToLower(strings.TrimSpace(env))
+    app.RootDirectory = filepath.Clean(root)
+    app.Storage = make(map[string] interface {})
+    app.Config = app.LoadConfig(app.Env, app.RootDirectory)
+    for _, srv := range app.Services { srv.Loading(app) }
+    app.Booted = time.Now() // mark as booted
+    app.InstallServers() // listen to ports
+    app.Stop.Wait() // wait until stop
+}
+
+func (app *App) ServeHTTP(rw *http.ResponseWriter, r *http.Response) {}
+func (app *App) LoadConfig(name, base string) *toml.TomlTree { return nil }
+func (app *App) PrepareJournal(level logrus.Level) *logrus.Logger { return nil }
+func (app *App) InstallServers() {}
 
 // Core data structure of the framework; represents a web application
 // built with the framework. Contains all the necessary API to create
@@ -100,6 +154,13 @@ type App struct {
     // multiple of ways; and may also be used by whoever is interested
     // the time of when exactly the application was launched.
     Booted time.Time
+
+    // Application wide stop signal, implement as a wait group. After
+    // the app is being booted the caller should wait on this group to
+    // be resumed once the application has been gracefully stopped. Do
+    // prefer this construct instead of abruptly terminating the app
+    // using other, likely more destructive, ways of terminating it.
+    Stop *sync.WaitGroup
 
     // Slice of HTTP servers that will be used to server application
     // instance. Servers are automatically created by the framework

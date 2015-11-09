@@ -25,6 +25,8 @@ package boot
 
 import "time"
 import "net/http"
+
+import "github.com/Sirupsen/logrus"
 import "github.com/satori/go.uuid"
 
 // Unique object that captures the details needed to invoke the Logic
@@ -47,6 +49,13 @@ type Context struct {
     // uniquely represents the specific instance of the contex, which
     // effectively represents every HTTP request that comes in.
     Reference uuid.UUID
+
+    // Default logger to use with this context. As framework makes an
+    // extensive usage of structured logging, this instance of logger
+    // has several pre-set fields that are relevant in the current
+    // context instance. You can use this logger to derive your own,
+    // yet inherit fields that have already been set for context.
+    Journal *logrus.Entry
 
     // General purpose storage for keeping key/value records per the
     // context instance. This storage may be used by the framework

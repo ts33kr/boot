@@ -25,8 +25,11 @@ package boot
 
 import "time"
 import "net/http"
+
 import "github.com/pelletier/go-toml"
+import "github.com/Sirupsen/logrus"
 import "github.com/satori/go.uuid"
+import "github.com/blang/semver"
 
 // Core data structure of the framework; represents a web application
 // built with the framework. Contains all the necessary API to create
@@ -44,10 +47,10 @@ type App struct {
 
     // Complement the application slug; represents a version of the
     // running application instance. The version format should conform
-    // to the semver format, like 0.0.1. The version should be strict,
-    // as in it should not containt undefined masks like 1.1.x. It is
-    // up to the user to assign meaningul semantics to app versions.
-    Version string
+    // to the semver (Semantical Versioning) format. Typically, version
+    // looks like 0.0.1, according to the semver formatting. Refer to
+    // the Semver package for more info on how to work with versions.
+    Version semver.Version
 
     // A path within the local file system where an instance of the
     // running application should be residing. The framework will use
@@ -69,6 +72,13 @@ type App struct {
     // uniquely represents the specific instance of the application.
     // So every time you start your application, it gets a new ID.
     Reference uuid.UUID
+
+    // Root level logger, as configured by the framework, according to
+    // the application and environment settings. Since the framework
+    // makes extensive use of a structured logger, this field contains
+    // a pre-configured root logging structure, with no fields set yet.
+    // Please refer to the Logrus package for more information on it.
+    Journal *logrus.Logger
 
     // General purpose storage for keeping key/value records per the
     // application instance. The storage may be used by the framework

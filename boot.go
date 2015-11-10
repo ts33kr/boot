@@ -36,3 +36,18 @@ type BiasedLogic func (*Context)
 // except the data that is encapsulated in the application instance. A
 // common usage is a setup function that only needs an app to work.
 type UnbiasedLogic func (*App)
+
+// Something that contains a piece of application's business logic and
+// knows how to invoke it. Any operation within the framework can only
+// be invoked in with regards to an instance of the context structure.
+// This interface abstracts away of knowledge of what logic type is
+// used, it only cares about the ability to apply it to a context.
+type Operation interface {
+
+    // Apply whatever business logic is stored in this operation to
+    // an instance of the context structure, effectively - executing
+    // the business logic. Error handling must be encapsulated within
+    // this method's implementation and may use the context to obtain
+    // or provider whatever might be needed to handle the errors.
+    Apply(*Context)
+}

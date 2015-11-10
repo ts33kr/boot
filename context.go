@@ -25,6 +25,7 @@ package boot
 
 import "time"
 import "net/http"
+import "sync"
 
 import "github.com/Sirupsen/logrus"
 import "github.com/satori/go.uuid"
@@ -35,6 +36,13 @@ import "github.com/satori/go.uuid"
 // the App and Service instances that have been used to process this
 // HTTP request up to the point when it has reached the Logic func.
 type Context struct {
+
+    // Syncronization primitive that should be used to lock on when
+    // performing any changes to the context instance. Especially it
+    // must be used when modifying the values in the Storage field of
+    // the context. Therefore, all write-access to the context should
+    // be made mutually exclusive, using this embedded mutex.
+    sync.Mutex
 
     // Instant in time when this context object was created. This value
     // is used internally by the framework in a multiple of ways; and

@@ -52,7 +52,6 @@ func MakeApplication (slug, version string) *App {
     reference := uuid.NewV5(uuid.NamespaceURL, url)
     application := &App { Slug: slug, Version: parsed }
     application.Reference = reference // set UUID
-    application.Done = &sync.WaitGroup {}
     return application // prepared app
 }
 
@@ -76,14 +75,13 @@ func (app *App) Boot(env, level, root string) {
     app.Config = app.LoadConfig(app.Env, app.RootDirectory)
     for _, srv := range app.Services { srv.Loading(app) }
     app.Booted = time.Now() // mark as booted
-    app.InstallServers() // listen to ports
-    app.Done.Wait() // waiting to stop
+    app.DeployServers() // listen to ports
+    app.done.Wait() // waiting to stop
 }
 
-func (app *App) ServeHTTP(rw *http.ResponseWriter, r *http.Response) {}
 func (app *App) LoadConfig(name, base string) *toml.TomlTree { return nil }
 func (app *App) PrepareJournal(level logrus.Level) *logrus.Logger { return nil }
-func (app *App) InstallServers() {}
+func (app *App) DeployServers() {}
 
 // Core data structure of the framework; represents a web application
 // built with the framework. Contains all the necessary API to create
@@ -160,7 +158,7 @@ type App struct {
     // be resumed once the application has been gracefully stopped. Do
     // prefer this construct instead of abruptly terminating the app
     // using other, likely more destructive, ways of terminating it.
-    Done *sync.WaitGroup
+    done sync.WaitGroup
 
     // Slice of HTTP servers that will be used to server application
     // instance. Servers are automatically created by the framework

@@ -67,6 +67,13 @@ type Service struct {
     // to the App structure and its Env field for more information.
     Available []string
 
+    // Slice of aux operations belonging to service. Normally, field
+    // should not be manipulated directly, but rather using framework
+    // API for that. All aux ops within a group should usually share
+    // the same purpose or intention. Please refer to the Aux type
+    // for detailed information on the aux operations themselves.
+    Auxes []*Aux
+
     // Slice of endpoints that make up this service. Normally, field
     // should not be manipulated directly, but rather using framework
     // API for that. All endpoints within a group should usually share

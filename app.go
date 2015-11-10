@@ -72,8 +72,7 @@ func (app *App) Boot(env, level, root string) {
     app.Env = strings.ToLower(strings.TrimSpace(env))
     app.RootDirectory = filepath.Clean(root)
     app.Storage = make(map[string] interface {})
-    app.Config = app.LoadConfig(app.Env, app.RootDirectory)
-    for _, srv := range app.Services { srv.Loading(app) }
+    app.Config = app.LoadConfig(app.Env, root)
     app.Booted = time.Now() // mark as booted
     app.DeployServers() // listen to ports
     app.done.Wait() // waiting to stop

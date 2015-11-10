@@ -37,7 +37,7 @@ type MakeAux func (*Aux)
 // will be syncronous, so no assumption should be made about it.
 func (aux *Aux) Apply(context *Context) {}
 
-// Auxilliary operation, not tied into HTTP stack. Aux operations are
+// Auxiliary operation, not tied into HTTP stack. Aux operations are
 // usually attached to services, but not necessarily. Usually, you would
 // implement an aux when you need an operation that can be invoked from
 // multiple endpoints or other locations that need to access to the

@@ -30,6 +30,13 @@ package boot
 // Please refer to the endpoint API for more information on usage.
 type MakeEndpoint func (*Endpoint)
 
+// Implementation of the Operation interface; execute business logic
+// that is stored within an endpoint, in regards to supplied context
+// structure that should normally represent an HTTP request. See the
+// Operation interface for details. There is no guarantee that op
+// will be syncronous, so no assumption should be made about it.
+func (ep *Endpoint) Apply(context *Context) {}
+
 // Final destination of where an HTTP request lands when it comes via
 // the web application. This data structure holds the implementation
 // function as well as a number of additional fields that accompany
@@ -65,10 +72,10 @@ type Endpoint struct {
     // the router documentation; please refer to it for more info.
     Pattern string
 
-    // Implementation of the endpoint. It should be the Logic typed
+    // Implementation of the endpoint. Should be BiasedLogic typed
     // function that implements the business logic this endpoint is
     // representing. It is invoked to handle an HTTP request matched
     // to this endpoint. A unique per-request context is going to be
-    // passed to the function. See Logic type info for details.
+    // passed to the function. See BiasedLogic type info for info.
     Business BiasedLogic
 }

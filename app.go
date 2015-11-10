@@ -30,6 +30,7 @@ import "path/filepath"
 import "strings"
 import "regexp"
 import "sync"
+import "fmt"
 
 import "github.com/pelletier/go-toml"
 import "github.com/Sirupsen/logrus"
@@ -68,17 +69,45 @@ func (app *App) Boot(env, level, root string) {
     if err != nil { panic("wrong logging level") }
     if !pattern.MatchString(env) { panic(eenv) }
     if _, e := os.Stat(root); e != nil { panic(estat) }
+    app.RootDirectory = filepath.Clean(root)
     app.Journal = app.PrepareJournal(parsedLevel)
     app.Env = strings.ToLower(strings.TrimSpace(env))
-    app.RootDirectory = filepath.Clean(root)
     app.Storage = make(map[string] interface {})
-    app.Config = app.LoadConfig(app.Env, root)
+    app.Config = app.LoadConfig(app.Env, "config")
     app.Booted = time.Now() // mark as booted
     app.DeployServers() // listen to ports
     app.done.Wait() // waiting to stop
 }
 
-func (app *App) LoadConfig(name, base string) *toml.TomlTree { return nil }
+// Load config file that contains the configuration data for the app
+// instance. Config file should be a valid TOML file that has a bare
+// minimum data to make it a valid config. Method will panic in case if
+// there is an error loading the config or interpreting data inside.
+// Must have app.slug, app.version and app.secret fields defined.
+// Refer to implementation code for more details on the loading.
+func (app *App) LoadConfig(name, base string) *toml.TomlTree {
+    const eload = "failed to load TOML config\n %s"
+    const estat = "could not open config file at %s"
+    const eold = "config version is older than app"
+    const eforeign = "config is from another app"
+    const esecret = "no app secret in the config"
+    var root string = app.RootDirectory // root dir
+    var fileName string = fmt.Sprintf("%s.toml", name)
+    resolved := filepath.Join(root, base, fileName)
+    _, err := os.Stat(filepath.Clean(resolved))
+    if err != nil { panic(fmt.Errorf(estat, resolved)) }
+    configTree, err := toml.LoadFile(resolved)
+    if err != nil { panic(fmt.Errorf(eload, err.Error())) }
+    secret := configTree.Get("app.secret").(string)
+    verStr := configTree.Get("app.version").(string)
+    slug := configTree.Get("app.slug").(string)
+    version := semver.MustParse(verStr)
+    if version.LT(app.Version) { panic(eold) }
+    if slug != app.Slug { panic(eforeign) }
+    if len(secret) == 0 { panic(esecret) }
+    return configTree // config is ready
+}
+
 func (app *App) PrepareJournal(level logrus.Level) *logrus.Logger { return nil }
 func (app *App) DeployServers() {}
 

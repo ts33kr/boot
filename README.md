@@ -34,7 +34,11 @@ declared in a way that it can be reused by any other piece of code in an
 application, whether it is an HTTP request handler or an auxiliary method.
 Important point is that it keeps architecture of an application solid and
 and predictable and allows for execution of any code within the app to be
-done in a very controllable and segregated fashion. Any application code
+done in a very controllable and segregated fashion.
+
+The code will ultimately reside in different **boot.Service** instances;
+its immediate implementation will usually be typed under **boot.BiasedLogic**,
+type, meaning a function that takes in the context. Any application code
 will eventually be exposed via **boot.Operation** interface that knows how
 to execute that code within a context of **boot.Context** structure. Under
 the hood, you would use of the two follwing structures to store the code.

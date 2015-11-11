@@ -34,6 +34,21 @@ declared in a way that it can be reused by any other piece of code in an
 application, whether it is an HTTP request handler or an auxiliary method.
 Important point is that it keeps architecture of an application solid and
 and predictable and allows for execution of any code within the app to be
-done in a very controllable and segregated fashion.
+done in a very controllable and segregated fashion. Any application code
+will eventually be exposed via **boot.Operation** interface that knows how
+to execute that code within a context of **boot.Context** structure. Under
+the hood, you would use of the two follwing structures to store the code.
+
+* **boot.Endpoint** - is a piece of application's business logic that
+is exposed through the HTTP interface directly. It has an HTTP verb and
+an URL routing pattern, among other parameters. It also has access to
+fetching the HTTP request with all its data, as well as an ability to
+respond to it with an HTTP response.
+
+* **boot.Aux** - is a piece of application's business logic that
+is exposed as an auxilirary operation. It could be invoked by endpoints
+or by another auxiliary operations. Operations in one service can easily
+call auxiliary methods of other service. All the communication between
+the caller and and aux op should be implemented via the context.
 
 ![proc](https://raw.github.com/ts33kr/boot/master/design/boot-proc.png)

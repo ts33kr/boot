@@ -47,7 +47,7 @@ the hood, you would use one of the two follwing structures to store the code.
 is exposed through the HTTP interface directly. It has an HTTP verb and
 an URL routing pattern, among other parameters. It also has access to
 fetching the HTTP request with all its data, as well as an ability to
-respond to it with an HTTP response.
+respond to it with a JSON encoded HTTP response.
 
 * **boot.Aux** - is a piece of application's business logic that
 is exposed as an auxilirary operation. It could be invoked by endpoints

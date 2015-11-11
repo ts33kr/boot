@@ -76,7 +76,7 @@ func (app *App) Boot(env, level, root string) {
     app.Config = app.LoadConfig(app.Env, "config")
     app.Booted = time.Now() // mark as booted
     app.DeployServers() // listen to ports
-    app.done.Wait() // waiting to stop
+    app.finish.Wait() // waiting to stop
 }
 
 // Load config file that contains the configuration data for the app
@@ -183,7 +183,7 @@ type App struct {
     // be resumed once the application has been gracefully stopped. Do
     // prefer this construct instead of abruptly terminating the app
     // using other, likely more destructive, ways of terminating it.
-    done sync.WaitGroup
+    finish sync.WaitGroup
 
     // Slice of HTTP servers that will be used to server application
     // instance. Servers are automatically created by the framework

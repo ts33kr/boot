@@ -35,7 +35,7 @@ type MakeEndpoint func (*Endpoint)
 // structure that should normally represent an HTTP request. See the
 // Operation interface for details. There is no guarantee that op
 // will be syncronous, so no assumption should be made about it.
-func (ep *Endpoint) Apply(context *Context) {}
+func (ep *Endpoint) Apply(context *Context, done chan<-error) {}
 
 // Final destination of where an HTTP request lands when it comes via
 // the web application. This data structure holds the implementation

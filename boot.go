@@ -46,8 +46,9 @@ type Operation interface {
 
     // Apply whatever business logic is stored in this operation to
     // an instance of the context structure, effectively - executing
-    // the business logic. Error handling must be encapsulated within
+    // the business logic. Panic handling must be encapsulated within
     // this method's implementation and may use the context to obtain
-    // or provider whatever might be needed to handle the errors.
-    Apply(*Context)
+    // or provide whatever might be needed to handle the errors.
+    // The code must write to a chan to indicate completion!
+    Apply(*Context, chan<-error)
 }

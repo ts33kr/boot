@@ -35,7 +35,7 @@ type MakeAux func (*Aux)
 // structure that represents some sort of arbitray context. See the
 // Operation interface for details. There is no guarantee that op
 // will be syncronous, so no assumption should be made about it.
-func (aux *Aux) Apply(context *Context) {}
+func (aux *Aux) Apply(context *Context, done chan<-error) {}
 
 // Auxiliary operation, not tied into HTTP stack. Aux operations are
 // usually attached to services, but not necessarily. Usually, you would

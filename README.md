@@ -52,7 +52,7 @@ respond to it with a JSON encoded HTTP response.
 * **boot.Aux** - is a piece of application's business logic that
 is exposed as an auxilirary operation. It could be invoked by endpoints
 or by another auxiliary operations. Operations in one service can easily
-call auxiliary methods of other service. All the communication between
-the caller and and aux op should be implemented via the context.
+call auxiliary operations of other services. All the communication between
+the caller and an aux operation should be implemented via the context.
 
 ![proc](https://raw.github.com/ts33kr/boot/master/design/boot-proc.png)

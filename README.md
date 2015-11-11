@@ -26,4 +26,4 @@ Here is a list of some of the features supported out of the box.
 * High performance and efficient memory consumption
 * Efficiently serving static resources (asset files)
 
-![arch](https://raw.github.com/ts33kr/boot/master/arch.png)
+![arch](https://raw.github.com/ts33kr/boot/master/arch.png?t=12345)

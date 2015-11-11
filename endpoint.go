@@ -58,6 +58,13 @@ type Endpoint struct {
     // This field should not be, as a general, manipulated directly.
     Methods []string
 
+    // Slice of environment names that designates where this endpoint
+    // should be made available. If an application is being booted with
+    // the configured environment that is not in this slice - endpoint
+    // will not be available in that instance of the application. Refer
+    // to the App structure and its Env field for more information.
+    Available []string
+
     // Pattern that is used to match an HTTP request against this
     // endpoint. Usually it is a mask of a partial URL (a path) that
     // contains parameter placeholders and other pettern expressions.

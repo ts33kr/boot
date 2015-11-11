@@ -10,6 +10,7 @@ line of code, without having to write all the usual boilerplate code
 that is necessary to power a production application and its deployment.
 Here is a list of some of the features supported out of the box.
   
+* **Strong REST & JSON architecture with SOA approach**
 * Switching app environments: dev, production, staging, etc
 * Automatically load a config (TOML) based on the environment
 * Flexible URL routing with placeholders, hosts and patterns
@@ -22,6 +23,5 @@ Here is a list of some of the features supported out of the box.
 * Auto connecting to multiple DBs by just adding config sections
 * Support for MongoDB & major SQL databases out of the box
 * Support for Redis as session, cache & general purpose storage
-* Strong REST & JSON architecture with SOA approach
 * High performance and efficient memory consumption
 * Efficiently serving static resources (asset files)

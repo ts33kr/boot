@@ -15,12 +15,13 @@ Here is a list of some of the features supported out of the box.
 * Flexible URL routing with placeholders, hosts and patterns
 * Declarative API defining the endpoints, with metadata
 * Serving inventory of available APIs defined in the app
-* Optional built-in UI for browsing and testing app APIs
+* Optional built-in UI for browsing and testing the APIs
 * Structured logger is automatically available in the app
-* Middleware support for the endpoints and endpoint groups
+* Middleware support for the endpoints and the services
 * Shipped with essentials for authentication & access control
 * Auto connecting to multiple DBs by just adding config sections
 * Support for MongoDB & major SQL databases out of the box
 * Support for Redis as session, cache & general purpose storage
 * High performance and efficient memory consumption
 * Efficiently serving static resources (asset files)
+* Strong REST/JSON architecture with SOA approach

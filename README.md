@@ -41,7 +41,7 @@ its immediate implementation will usually be typed under **boot.BiasedLogic**
 type, meaning a function that takes in the context. Any application code
 will eventually be exposed via **boot.Operation** interface that knows how
 to execute that code within a context of **boot.Context** structure. Under
-the hood, you would use of the two follwing structures to store the code.
+the hood, you would use one of the two follwing structures to store the code.
 
 * **boot.Endpoint** - is a piece of application's business logic that
 is exposed through the HTTP interface directly. It has an HTTP verb and

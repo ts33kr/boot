@@ -27,4 +27,13 @@ Here is a list of some of the features supported out of the box.
 * Efficiently serving static resources (asset files)
 
 ![arch](https://raw.github.com/ts33kr/boot/master/design/boot-arch.png)
+
+The framework is designed to enable maximum code composition! This is
+achieved by allowing any piece of code that does something useful to be
+declared in a way that it can be reused by any other piece of code in an
+application, whether it is an HTTP request handler or an auxiliary method.
+Important point is that it keeps architecture of an application solid and
+and predictable and allows for execution of any code within the app to be
+done in a very controllable and segregated fashion.
+
 ![proc](https://raw.github.com/ts33kr/boot/master/design/boot-proc.png)

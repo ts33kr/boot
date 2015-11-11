@@ -22,6 +22,6 @@ Here is a list of some of the features supported out of the box.
 * Auto connecting to multiple DBs by just adding config sections
 * Support for MongoDB & major SQL databases out of the box
 * Support for Redis as session, cache & general purpose storage
+* Strong REST & JSON architecture with SOA approach
 * High performance and efficient memory consumption
 * Efficiently serving static resources (asset files)
-* Strong REST/JSON architecture with SOA approach

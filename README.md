@@ -25,3 +25,5 @@ Here is a list of some of the features supported out of the box.
 * Support for Redis as session, cache & general purpose storage
 * High performance and efficient memory consumption
 * Efficiently serving static resources (asset files)
+
+![arch](https://raw.github.com/ts33kr/boot/master/arch.png)

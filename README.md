@@ -11,10 +11,10 @@ that is necessary to power a production application and its deployment.
 Here is a list of some of the features supported out of the box.
   
 * **Strong REST & JSON architecture with SOA approach**
+* **Out of the box statistics and measurements essentials**
 * Switching app environments: dev, production, staging, etc
 * Automatically load a config (TOML) based on the environment
 * Flexible URL routing with placeholders, hosts and patterns
-* Declarative API defining the endpoints, with metadata
 * Serving inventory of available APIs defined in the app
 * Optional built-in UI for browsing and testing the APIs
 * Structured logger is automatically available in the app

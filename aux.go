@@ -58,13 +58,6 @@ type Aux struct {
     // via corresponding API; please do not modify this directly.
     About string
 
-    // Slice of environment names that designates where this aux op
-    // should be made available. If an application is being booted with
-    // the configured environment that is not in this slice - aux op
-    // will not be available in that instance of the application. Refer
-    // to the App structure and its Env field for more information.
-    Available []string
-
     // Implementation of the aux. Should be BiasedLogic typed
     // function that implements the business logic this aux op is
     // representing. It is invoked when the aux operation is being

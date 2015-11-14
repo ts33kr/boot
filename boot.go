@@ -51,4 +51,11 @@ type Operation interface {
     // or provide whatever might be needed to handle the errors.
     // The code must write to a chan to indicate completion!
     Apply(*Context, chan<-error)
+
+    // Request to make a report of an error that might have occured
+    // while applying (executing) the operation. The way how an error
+    // is reported entirely depends on the interface implementation.
+    // This method should be invoked with error that might have been
+    // handed off by the Apply method, through its completion chan.
+    ReportIssue(*Context, error)
 }

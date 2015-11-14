@@ -37,6 +37,13 @@ type MakeAux func (*Aux)
 // will be syncronous, so no assumption should be made about it.
 func (aux *Aux) Apply(context *Context, done chan<-error) {}
 
+// Implementation of the Operation interface; report the error that
+// might have occured during execution of the buiness logic implemented
+// by an aux op. Depending on the application settings, this method
+// would typically journal the error to an application and/or context
+// journal and optionally use other mechanisms to expose the error.
+func (aux *Aux) ReportIssue(context *Context, err error) {}
+
 // Auxiliary operation, not tied into HTTP stack. Aux operations are
 // usually attached to services, but not necessarily. Usually, you would
 // implement an aux when you need an operation that can be invoked from

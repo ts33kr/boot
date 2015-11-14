@@ -37,6 +37,13 @@ type MakeEndpoint func (*Endpoint)
 // will be syncronous, so no assumption should be made about it.
 func (ep *Endpoint) Apply(context *Context, done chan<-error) {}
 
+// Implementation of the Operation interface; report the error that
+// might have occured during execution of the buiness logic implemented
+// by an endpoint. Depending on the application settings, this method
+// would typically let an HTTP client know about the error, by writing
+// to the Context.Responder with the appropriate code and message.
+func (ep *Endpoint) ReportIssue(context *Context, err error) {}
+
 // Final destination of where an HTTP request lands when it comes via
 // the web application. This data structure holds the implementation
 // function as well as a number of additional fields that accompany

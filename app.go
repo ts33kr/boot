@@ -77,6 +77,13 @@ func (app *App) Boot(env, level, root string) {
     app.Booted = time.Now() // mark as booted
 }
 
+// Deploy the application. Spawn one or more of HTTP(s) servers, as
+// defined in the loaded config, and make them listen on respective
+// addresses and ports. Every server will have this application set as
+// the HTTP requests handler. Method will block until all servers are
+// stopped. See boot.App and this method implementation for details.
+func (app *App) Deploy() {}
+
 // Load config file that contains the configuration data for the app
 // instance. Config file should be a valid TOML file that has a bare
 // minimum data to make it a valid config. Method will panic in case if
@@ -126,13 +133,6 @@ func (app *App) makeJournal(level logrus.Level) *logrus.Logger {
     journal.Infoln(m, time.Now().Format(t))
     return journal // is ready to use
 }
-
-// Deploy the application. Spawn one or more of HTTP(s) servers, as
-// defined in the loaded config, and make them listen on respective
-// addresses and ports. Every server will have this application set as
-// the HTTP requests handler. Method will block until all servers are
-// stopped. See boot.App and this method implementation for details.
-func (app *App) deployServers() {}
 
 // Core data structure of the framework; represents a web application
 // built with the framework. Contains all the necessary API to create

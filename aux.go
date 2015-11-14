@@ -28,7 +28,7 @@ package boot
 // initialized before invoking the maker function, passing it through.
 // aux op makers are going to be invoked during application launch.
 // Please refer to the aux op API for more information on usage.
-type MakeAux func (*Aux)
+type AuxMaker func (*Aux)
 
 // Implementation of the Operation interface; execute business logic
 // that is stored within an aux op, in regards to supplied context

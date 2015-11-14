@@ -47,15 +47,14 @@ type Operation interface {
     // Apply whatever business logic is stored in this operation to
     // an instance of the context structure, effectively - executing
     // the business logic. Panic handling must be encapsulated within
-    // this method's implementation and may use the context to obtain
-    // or provide whatever might be needed to handle the errors.
-    // The code must write to a chan to indicate completion!
-    Apply(*Context, chan<-error)
+    // this method's implementation and in case if there was a panic,
+    // its error value should be returned as the method's result.
+    Apply(*Context) error
 
     // Request to make a report of an error that might have occured
     // while applying (executing) the operation. The way how an error
     // is reported entirely depends on the interface implementation.
     // This method should be invoked with error that might have been
-    // handed off by the Apply method, through its completion chan.
+    // handed off by the Apply method, upon method's completion.
     ReportIssue(*Context, error)
 }

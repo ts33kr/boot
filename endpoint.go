@@ -33,9 +33,9 @@ type EndpointBuilder func (*Endpoint)
 // Implementation of the Operation interface; execute business logic
 // that is stored within an endpoint, in regards to supplied context
 // structure that should normally represent an HTTP request. See the
-// Operation interface for details. There is no guarantee that op
-// will be syncronous, so no assumption should be made about it.
-func (ep *Endpoint) Apply(context *Context, done chan<-error) {}
+// Operation interface for details. The method should be blocking; if
+// asynchronous behavior needed - must be implemented by the caller.
+func (ep *Endpoint) Apply(context *Context) error { return nil }
 
 // Implementation of the Operation interface; report the error that
 // might have occured during execution of the buiness logic implemented

@@ -33,9 +33,9 @@ type AuxBuilder func (*Aux)
 // Implementation of the Operation interface; execute business logic
 // that is stored within an aux op, in regards to supplied context
 // structure that represents some sort of arbitray context. See the
-// Operation interface for details. There is no guarantee that op
-// will be syncronous, so no assumption should be made about it.
-func (aux *Aux) Apply(context *Context, done chan<-error) {}
+// Operation interface for details. The method should be blocking; if
+// asynchronous behavior needed - must be implemented by the caller.
+func (aux *Aux) Apply(context *Context) error { return nil }
 
 // Implementation of the Operation interface; report the error that
 // might have occured during execution of the buiness logic implemented

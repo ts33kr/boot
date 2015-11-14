@@ -16,7 +16,6 @@ Here is a list of some of the features supported out of the box.
 * Automatically load a config (TOML) based on the environment
 * Flexible URL routing with placeholders, hosts and patterns
 * Serving inventory of available APIs defined in the app
-* Optional built-in UI for browsing and testing the APIs
 * Structured logger is automatically available in the app
 * Middleware support for the endpoints and the services
 * Shipped with essentials for authentication & access control

@@ -28,7 +28,7 @@ package boot
 // initialized before invoking the maker function, passing it through.
 // endpoint makers are going to be invoked during application launch.
 // Please refer to the endpoint API for more information on usage.
-type EndpointMaker func (*Endpoint)
+type EndpointBuilder func (*Endpoint)
 
 // Implementation of the Operation interface; execute business logic
 // that is stored within an endpoint, in regards to supplied context

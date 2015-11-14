@@ -30,7 +30,7 @@ import "time"
 // initialized before invoking the maker function, passing it through.
 // provider makers are going to be invoked during application launch.
 // Please refer to the provider API for more information on usage.
-type ProviderMaker func (*Provider)
+type ProviderBuilder func (*Provider)
 
 // Provider is an entity that proviedes some sort of functionality
 // for the application. Good example of this is a provider that could

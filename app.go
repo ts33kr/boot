@@ -70,12 +70,12 @@ func (app *App) Boot(env, level, root string) {
     if !pattern.MatchString(env) { panic(eenv) }
     if _, e := os.Stat(root); e != nil { panic(estat) }
     app.RootDirectory = filepath.Clean(root)
-    app.Journal = app.MakeJournal(parsedLevel)
+    app.Journal = app.makeJournal(parsedLevel)
     app.Env = strings.ToLower(strings.TrimSpace(env))
     app.Storage = make(map[string] interface {})
-    app.Config = app.LoadConfig(app.Env, "config")
+    app.Config = app.loadConfig(app.Env, "config")
     app.Booted = time.Now() // mark as booted
-    app.DeployServers() // listen to ports
+    app.deployServers() // listen to ports
     app.finish.Wait() // waiting to stop
 }
 
@@ -85,7 +85,7 @@ func (app *App) Boot(env, level, root string) {
 // there is an error loading the config or interpreting data inside.
 // Must have the app.slug and app.version fields defined correctly.
 // Refer to implementation code for more details on the loading.
-func (app *App) LoadConfig(name, base string) *toml.TomlTree {
+func (app *App) loadConfig(name, base string) *toml.TomlTree {
     const eload = "failed to load TOML config\n %s"
     const estat = "could not open config file at %s"
     const eold = "config version is older than app"
@@ -110,7 +110,7 @@ func (app *App) LoadConfig(name, base string) *toml.TomlTree {
 // app instance to configure the journal correctly. This method only
 // instantiates a very basic journal; anything more complicated than
 // that should be implementing using a boot.Provider to do it.
-func (app *App) MakeJournal(level logrus.Level) *logrus.Logger {
+func (app *App) makeJournal(level logrus.Level) *logrus.Logger {
     const m = "started application journal at %s"
     const t = time.RFC850 // time format for init
     var journal *logrus.Logger = &logrus.Logger {}
@@ -129,7 +129,7 @@ func (app *App) MakeJournal(level logrus.Level) *logrus.Logger {
     return journal // is ready to use
 }
 
-func (app *App) DeployServers() {}
+func (app *App) deployServers() {}
 
 // Core data structure of the framework; represents a web application
 // built with the framework. Contains all the necessary API to create

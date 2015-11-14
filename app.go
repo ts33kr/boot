@@ -70,7 +70,7 @@ func (app *App) Boot(env, level, root string) {
     if !pattern.MatchString(env) { panic(eenv) }
     if _, e := os.Stat(root); e != nil { panic(estat) }
     app.RootDirectory = filepath.Clean(root)
-    app.Journal = app.PrepareJournal(parsedLevel)
+    app.Journal = app.MakeJournal(parsedLevel)
     app.Env = strings.ToLower(strings.TrimSpace(env))
     app.Storage = make(map[string] interface {})
     app.Config = app.LoadConfig(app.Env, "config")
@@ -105,7 +105,30 @@ func (app *App) LoadConfig(name, base string) *toml.TomlTree {
     return configTree // config is ready
 }
 
-func (app *App) PrepareJournal(level logrus.Level) *logrus.Logger { return nil }
+// Build an adequate instance of the structured logger for this
+// application instance. The journal builder may draw data from the
+// app instance to configure the journal correctly. This method only
+// instantiates a very basic journal; anything more complicated than
+// that should be implementing using a boot.Provider to do it.
+func (app *App) MakeJournal(level logrus.Level) *logrus.Logger {
+    const m = "started application journal at %s"
+    const t = time.RFC850 // time format for init
+    var journal *logrus.Logger = &logrus.Logger {}
+    formatter := new(logrus.TextFormatter) // std
+    journal.Level = level // use requested level
+    journal.Out = os.Stdout // all goes to stdout
+    journal.Hooks = make(logrus.LevelHooks) // empty
+    journal.Formatter = formatter // set formatter
+    formatter.ForceColors = false // act smart
+    formatter.DisableColors = false // make pretty
+    formatter.DisableTimestamp = false // is useful
+    formatter.FullTimestamp = false // numbers
+    formatter.TimestampFormat = time.StampMilli
+    formatter.DisableSorting = false // order!
+    journal.Infoln(m, time.Now().Format(t))
+    return journal // is ready to use
+}
+
 func (app *App) DeployServers() {}
 
 // Core data structure of the framework; represents a web application

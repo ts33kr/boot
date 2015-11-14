@@ -56,11 +56,11 @@ func MakeApplication (slug, version string) *App {
     return application // prepared app
 }
 
-// Launch the application. This means that the application should have
+// Erect the application. Once completed, the application should have
 // all the services installed and all the necessary configurations done
-// before invoking the boot sequence. This method will then carry out
-// the boot sequence, which involves all the necessary setups. It will
-// block until the application will be gracefully terminated.
+// before invoking the deploy sequence. Basically, this method will do
+// everything to get the application configured and be ready to launch.
+// Method itself however will not launch the app; see Deploy for that.
 func (app *App) Boot(env, level, root string) {
     const eenv = "environment name must be 1 word"
     const estat = "could not open the specified root"
@@ -75,8 +75,6 @@ func (app *App) Boot(env, level, root string) {
     app.Storage = make(map[string] interface {})
     app.Config = app.loadConfig(app.Env, "config")
     app.Booted = time.Now() // mark as booted
-    app.deployServers() // listen to ports
-    app.finish.Wait() // waiting to stop
 }
 
 // Load config file that contains the configuration data for the app
@@ -129,6 +127,11 @@ func (app *App) makeJournal(level logrus.Level) *logrus.Logger {
     return journal // is ready to use
 }
 
+// Deploy the application. Spawn one or more of HTTP(s) servers, as
+// defined in the loaded config, and make them listen on respective
+// addresses and ports. Every server will have this application set as
+// the HTTP requests handler. Method will block until all servers are
+// stopped. See boot.App and this method implementation for details.
 func (app *App) deployServers() {}
 
 // Core data structure of the framework; represents a web application

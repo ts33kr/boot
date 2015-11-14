@@ -42,7 +42,7 @@ import "github.com/blang/semver"
 // Every application should have a valid slug (name) and a version. So
 // this function makes sure they have been passed and are all valid.
 // Generally, you should not be creating more than one application.
-func MakeApplication (slug, version string) *App {
+func New (slug, version string) *App {
     const url = "https://github.com/ts33kr/boot"
     const eslug = "slug is not of correct format"
     const eversion = "version is not valid semver"

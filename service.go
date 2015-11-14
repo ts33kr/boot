@@ -30,7 +30,7 @@ import "time"
 // initialized before invoking the maker function, passing it through.
 // Service makers are going to be invoked during application launch.
 // Please refer to the service API for more information on usage.
-type MakeService func (*Service)
+type ServiceBuilder func (*Service)
 
 // Service is a group of endpoints that are functionally related. It
 // also serves as a common data exchange bus between the endpoints that

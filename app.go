@@ -80,7 +80,7 @@ func (app *App) Boot(env, level, root string) {
     app.Booted = time.Now() // mark app as booted
     log := app.Journal.WithField("env", app.Env)
     log = log.WithField("root", app.RootDirectory)
-    log = log.WithField("slug", app.Slug)
+    log = log.WithField("level", parsedLevel)
     log.Info("application has been booted")
 }
 

@@ -122,7 +122,7 @@ func (app *App) loadConfig(name, base string) *toml.TomlTree {
 // instantiates a very basic journal; anything more complicated than
 // that should be implementing using a boot.Provider to do it.
 func (app *App) makeJournal(level logrus.Level) *logrus.Logger {
-    const m = "started application journal at %s"
+    const m = "started application journal at"
     const t = time.RFC850 // time format for init
     var journal *logrus.Logger = &logrus.Logger {}
     formatter := new(logrus.TextFormatter) // std

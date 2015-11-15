@@ -74,7 +74,10 @@ func (app *App) Boot(env, level, root string) {
     app.Env = strings.ToLower(strings.TrimSpace(env))
     app.Storage = make(map[string] interface {})
     app.Config = app.loadConfig(app.Env, "config")
-    app.Booted = time.Now() // mark as booted
+    app.Booted = time.Now() // mark app as booted
+    log := app.Journal.WithField("env", app.Env)
+    log = log.WithField("root", app.RootDirectory)
+    log.Info("application has been booted boot")
 }
 
 // Deploy the application. Spawn one or more of HTTP(s) servers, as

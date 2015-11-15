@@ -52,7 +52,10 @@ func New (slug, version string) *App {
     if parsed.Validate() != nil { panic(eversion) }
     reference := uuid.NewV5(uuid.NamespaceURL, url)
     application := &App { Slug: slug, Version: parsed }
+    application.Servers = make(map[string]*http.Server)
     application.Reference = reference // set UUID
+    application.Providers = make([]*Provider, 0)
+    application.Services = make([]*Service, 0)
     return application // prepared app
 }
 
@@ -207,19 +210,19 @@ type App struct {
     // the time of when exactly the application was launched.
     Booted time.Time
 
+    // Map of HTTP servers that will be used to server application
+    // instance. Servers are automatically created by the framework
+    // for every corresponding section in the config file. This is
+    // needed for applications that must be served on multiple ports
+    // or network interfaces at the same time, within one process.
+    Servers map[string]*http.Server
+
     // Application wide stop signal, implement as a wait group. After
     // the app is being booted the caller should wait on this group to
     // be resumed once the application has been gracefully stopped. Do
     // prefer this construct instead of abruptly terminating the app
     // using other, likely more destructive, ways of terminating it.
     finish sync.WaitGroup
-
-    // Slice of HTTP servers that will be used to server application
-    // instance. Servers are automatically created by the framework
-    // for every corresponding section in the config file. This is
-    // needed for applications that must be served on multiple ports
-    // or network interfaces at the same time, within one process.
-    Servers []*http.Server
 
     // Slice of providers installed within this application. Provider
     // is an entity, with a piece of code attached, that provides some

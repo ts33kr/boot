@@ -57,7 +57,7 @@ func (app *App) deployHttpServers() {
         app.Servers[intent] = server // store server
         app.finish.Add(1) // wait for one server
         go func() { // do not block on listening
-            log = log.WithField("binding", addr)
+            log = log.WithField("address", addr)
             log = log.WithField("intent", intent)
             log.Info("deploying HTTP app server")
             defer app.finish.Done() // finished

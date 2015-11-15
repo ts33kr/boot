@@ -80,7 +80,8 @@ func (app *App) Boot(env, level, root string) {
     app.Booted = time.Now() // mark app as booted
     log := app.Journal.WithField("env", app.Env)
     log = log.WithField("root", app.RootDirectory)
-    log.Info("application has been booted boot")
+    log = log.WithField("slug", app.Slug)
+    log.Info("application has been booted")
 }
 
 // Deploy the application. Spawn one or more of HTTP(s) servers, as
@@ -88,7 +89,10 @@ func (app *App) Boot(env, level, root string) {
 // addresses and ports. Every server will have this application set as
 // the HTTP requests handler. Method will block until all servers are
 // stopped. See boot.App and this method implementation for details.
-func (app *App) Deploy() {}
+func (app *App) Deploy() {
+    app.deployHttpServers()
+    app.finish.Wait()
+}
 
 // Load config file that contains the configuration data for the app
 // instance. Config file should be a valid TOML file that has a bare
@@ -97,10 +101,10 @@ func (app *App) Deploy() {}
 // Must have the app.slug and app.version fields defined correctly.
 // Refer to implementation code for more details on the loading.
 func (app *App) loadConfig(name, base string) *toml.TomlTree {
-    const eload = "failed to load TOML config\n %s"
-    const estat = "could not open config file at %s"
+    const eload = "failed to load TOML config\n %v"
+    const estat = "could not open config file at %v"
     const eold = "config version is older than app"
-    const eforeign = "config is from another app"
+    const eforeign = "config is from different app"
     var root string = app.RootDirectory // root dir
     var fileName string = fmt.Sprintf("%s.toml", name)
     resolved := filepath.Join(root, base, fileName)
@@ -108,9 +112,9 @@ func (app *App) loadConfig(name, base string) *toml.TomlTree {
     if err != nil { panic(fmt.Errorf(estat, resolved)) }
     configTree, err := toml.LoadFile(resolved)
     if err != nil { panic(fmt.Errorf(eload, err.Error())) }
-    verStr := configTree.Get("app.version").(string)
-    slug := configTree.Get("app.slug").(string)
-    version := semver.MustParse(verStr)
+    verStr := configTree.GetDefault("app.version", "")
+    slug := configTree.GetDefault("app.slug", "n/a")
+    version := semver.MustParse(verStr.(string))
     if version.LT(app.Version) { panic(eold) }
     if slug != app.Slug { panic(eforeign) }
     return configTree // config is ready
@@ -122,7 +126,7 @@ func (app *App) loadConfig(name, base string) *toml.TomlTree {
 // instantiates a very basic journal; anything more complicated than
 // that should be implementing using a boot.Provider to do it.
 func (app *App) makeJournal(level logrus.Level) *logrus.Logger {
-    const m = "started application journal at"
+    const m = "begin writing application journal"
     const t = time.RFC850 // time format for init
     var journal *logrus.Logger = &logrus.Logger {}
     formatter := new(logrus.TextFormatter) // std
@@ -136,7 +140,7 @@ func (app *App) makeJournal(level logrus.Level) *logrus.Logger {
     formatter.FullTimestamp = false // numbers
     formatter.TimestampFormat = time.StampMilli
     formatter.DisableSorting = false // order!
-    journal.Infoln(m, time.Now().Format(t))
+    journal.WithField("time", time.Now()).Info(m)
     return journal // is ready to use
 }
 

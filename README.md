@@ -12,10 +12,10 @@ Here is a list of some of the features supported out of the box.
   
 * **Strong REST & JSON architecture with SOA approach**
 * **Out of the box statistics and measurements essentials**
+* **Expose inventory & docs for endpoints defined in the app**
 * Switching app environments: dev, production, staging, etc
 * Automatically load a config (TOML) based on the environment
 * Flexible URL routing with placeholders, hosts and patterns
-* Serving inventory of available APIs defined in the app
 * Structured logger is automatically available in the app
 * Middleware support on a per-endpoint and per-service basis
 * Shipped with essentials for authentication & access control

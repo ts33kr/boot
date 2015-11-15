@@ -59,7 +59,7 @@ func (app *App) deployHttpServers() {
         go func() { // do not block on listening
             log = log.WithField("address", addr)
             log = log.WithField("intent", intent)
-            log.Info("deploying HTTP app server")
+            log.Info("deploy application server")
             defer app.finish.Done() // finished
             server.ListenAndServe() // listen!
         }()

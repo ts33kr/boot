@@ -41,19 +41,16 @@ func (app *App) ServeHTTP(rw http.ResponseWriter, r *http.Request) {}
 // parameters and bind it to the declared address to listen and accept
 // incoming HTTP requests. See boot.App.Deploy method for details.
 func (app *App) deployHttpServers() {
-    const expression = "$.app.servers.http[:]"
-    const ecomp = "can't to compile config query: %s"
     const eempty = "no HTTP app servers in a config"
     log := app.Journal.WithField("server", "HTTP")
-    query, err := toml.CompileQuery(expression)
-    if err != nil { panic(fmt.Errorf(ecomp, err)) }
-    servers := query.Execute(app.Config) // find all!
-    if len(servers.Values()) == 0 { panic(eempty) }
-    for _, subtree := range servers.Values() {
-        config := subtree.(*toml.TomlTree) // cast
+    sections := app.Config.Get("app.servers.http")
+    servers, ok := sections.([]*toml.TomlTree) // !!
+    if !ok { panic("invalid app.servers.http") }
+    if len(servers) == 0 { panic(eempty) }
+    for _, config := range servers {
         intent := config.Get("intent").(string)
         host := config.Get("hostname").(string)
-        port := config.Get("port-number").(uint)
+        port := config.Get("port-number").(int64)
         addr := fmt.Sprintf("%s:%d", host, port)
         server := &http.Server { Addr: addr }
         server.Handler = app // set HTTP handler
@@ -62,7 +59,7 @@ func (app *App) deployHttpServers() {
         go func() { // do not block on listening
             log = log.WithField("binding", addr)
             log = log.WithField("intent", intent)
-            log.Info("deploy application server")
+            log.Info("deploying HTTP app server")
             defer app.finish.Done() // finished
             server.ListenAndServe() // listen!
         }()

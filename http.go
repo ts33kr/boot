@@ -42,7 +42,7 @@ func (app *App) ServeHTTP(rw http.ResponseWriter, r *http.Request) {}
 // incoming HTTP requests. See boot.App.Deploy method for details.
 func (app *App) deployHttpServers() {
     const eempty = "no HTTP app servers in a config"
-    log := app.Journal.WithField("server", "HTTP")
+    log := app.Journal.WithField("proto", "HTTP")
     sections := app.Config.Get("app.servers.http")
     servers, ok := sections.([]*toml.TomlTree)
     if !ok { panic("invalid app.servers.http") }

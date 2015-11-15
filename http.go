@@ -44,7 +44,7 @@ func (app *App) deployHttpServers() {
     const eempty = "no HTTP app servers in a config"
     log := app.Journal.WithField("server", "HTTP")
     sections := app.Config.Get("app.servers.http")
-    servers, ok := sections.([]*toml.TomlTree) // !!
+    servers, ok := sections.([]*toml.TomlTree)
     if !ok { panic("invalid app.servers.http") }
     if len(servers) == 0 { panic(eempty) }
     for _, config := range servers {

@@ -37,14 +37,46 @@ type ServiceBuilder func (*Service)
 // a rule, you would not need to call this method yourself. It will
 // initialize the service, run all the relevant aux operation that
 // might have been marked for execution during service up-ing.
-func (srv *Service) Up(app *App) {}
+func (srv *Service) Up(app *App) {
+    srv.Erected = time.Now() // mark service as up
+    context := &Context { App: app, Service: srv }
+    log := app.Journal.WithField("service", srv.Slug)
+    context.Created = srv.Erected // creation stamp
+    context.Journal = log // setup derived logger
+    log.Info("booting application service up")
+    for _, aux := range srv.Auxes { // walk auxes
+        if aux.WhenUp { // is scheduled to execute?
+            if e := aux.Apply(context); e != nil {
+                elog := log.WithField("aux", aux.Slug)
+                elog.Warn("issues during service up")
+                aux.ReportIssue(context, e)
+            }
+        }
+    }
+}
 
 // Strip the service down and stop. This method is typically called
 // by the framework, during the application termination sequence. As
 // a rule, you would not need to call this method yourself. It will
 // clean-up the service, run all the relevant aux operation that
 // might have been marked for execution during service down-ing.
-func (srv *Service) Down(app *App) {}
+func (srv *Service) Down(app *App) {
+    srv.Erected = time.Time {} // set service down
+    context := &Context { App: app, Service: srv }
+    log := app.Journal.WithField("service", srv.Slug)
+    context.Created = time.Now() // creation stamp
+    context.Journal = log // setup derived logger
+    log.Info("taking application service down")
+    for _, aux := range srv.Auxes { // walk auxes
+        if aux.WhenDown { // is scheduled to execute?
+            if e := aux.Apply(context); e != nil {
+                elog := log.WithField("aux", aux.Slug)
+                elog.Warn("issues during service down")
+                aux.ReportIssue(context, e)
+            }
+        }
+    }
+}
 
 // Service is a group of endpoints that are functionally related. It
 // also serves as a common data exchange bus between the endpoints that
@@ -102,10 +134,10 @@ type Service struct {
     // framework logic. Beware, values are empty-interface typed.
     Storage map[string] interface {}
 
-    // Instant in time when the service was loaded up. A nil value
+    // Instant in time when the service was brought up. A nil value
     // should indicate that current service instance has not yet been
     // loaded up. This value is used internally by the framework in a
     // multiple of ways; and may also be used by whoever is interested
     // the time of when the service was loaded, if it was at all.
-    Loaded time.Time
+    Erected time.Time
 }

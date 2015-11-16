@@ -35,14 +35,46 @@ import "github.com/pelletier/go-toml"
 // that support the standard http.Handler interface and its methods.
 func (app *App) ServeHTTP(rw http.ResponseWriter, r *http.Request) {}
 
-// Find all HTTP application server declarations in the app config
-// and use the configuration data to create and deploy every declared
-// app server. Deploying a server means configuring it with correct
+// Find all HTTPS application server declarations in the app config
+// and use the configuration data to create and run every declared
+// app server. Running an app server means configuring it with correct
 // parameters and bind it to the declared address to listen and accept
 // incoming HTTP requests. See boot.App.Deploy method for details.
-func (app *App) deployHttpServers() {
-    const eempty = "no HTTP app servers in a config"
+func (app *App) spawnHttpsServers() {
+    log := app.Journal.WithField("proto", "HTTPS")
+    const eempty = "no HTTPS app servers in a config"
+    sections := app.Config.Get("app.servers.https")
+    servers, ok := sections.([]*toml.TomlTree)
+    if !ok { panic("invalid app.servers.https") }
+    if len(servers) == 0 { panic(eempty) }
+    for _, config := range servers {
+        key := config.Get("key").(string)
+        cert := config.Get("cert").(string)
+        intent := config.Get("intent").(string)
+        host := config.Get("hostname").(string)
+        port := config.Get("port-number").(int64)
+        server := &http.Server { Handler: app }
+        server.Addr = fmt.Sprintf("%v:%d", host, port)
+        app.Servers[intent] = server // store server
+        app.finish.Add(1) // wait for one server
+        go func() { // do not block on listening
+            log = log.WithField("bind", server.Addr)
+            log = log.WithField("intent", intent)
+            log.Info("spawn application server")
+            defer app.finish.Done() // clean up
+            panic(server.ListenAndServeTLS(cert, key))
+        }()
+    }
+}
+
+// Find all HTTP application server declarations in the app config
+// and use the configuration data to create and run every declared
+// app server. Running an app server means configuring it with correct
+// parameters and bind it to the declared address to listen and accept
+// incoming HTTP requests. See boot.App.Deploy method for details.
+func (app *App) spawnHttpServers() {
     log := app.Journal.WithField("proto", "HTTP")
+    const eempty = "no HTTP app servers in a config"
     sections := app.Config.Get("app.servers.http")
     servers, ok := sections.([]*toml.TomlTree)
     if !ok { panic("invalid app.servers.http") }
@@ -51,17 +83,16 @@ func (app *App) deployHttpServers() {
         intent := config.Get("intent").(string)
         host := config.Get("hostname").(string)
         port := config.Get("port-number").(int64)
-        addr := fmt.Sprintf("%s:%d", host, port)
-        server := &http.Server { Addr: addr }
-        server.Handler = app // set HTTP handler
+        server := &http.Server { Handler: app }
+        server.Addr = fmt.Sprintf("%v:%d", host, port)
         app.Servers[intent] = server // store server
         app.finish.Add(1) // wait for one server
         go func() { // do not block on listening
-            log = log.WithField("address", addr)
+            log = log.WithField("bind", server.Addr)
             log = log.WithField("intent", intent)
-            log.Info("deploy application server")
-            defer app.finish.Done() // finished
-            server.ListenAndServe() // listen!
+            log.Info("spawn application server")
+            defer app.finish.Done() // clean up
+            panic(server.ListenAndServe())
         }()
     }
 }

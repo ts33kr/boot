@@ -32,6 +32,20 @@ import "time"
 // Please refer to the service API for more information on usage.
 type ServiceBuilder func (*Service)
 
+// Get the service up and running. This method is typically called
+// by the framework, during the application deployment sequence. As
+// a rule, you would not need to call this method yourself. It will
+// initialize the service, run all the relevant aux operation that
+// might have been marked for execution during service up-ing.
+func (srv *Service) Up(app *App) {}
+
+// Strip the service down and stop. This method is typically called
+// by the framework, during the application termination sequence. As
+// a rule, you would not need to call this method yourself. It will
+// clean-up the service, run all the relevant aux operation that
+// might have been marked for execution during service down-ing.
+func (srv *Service) Down(app *App) {}
+
 // Service is a group of endpoints that are functionally related. It
 // also serves as a common data exchange bus between the endpoints that
 // belong to the same service. Endpoints may store data in the service,

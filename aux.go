@@ -65,6 +65,20 @@ type Aux struct {
     // via corresponding API; please do not modify this directly.
     About string
 
+    // Mark current aux operation for execution when a service is
+    // getting up. Although it marks the operation to be executed when
+    // up-ing the service - it is entirely up to service implementation
+    // as to how or when to invoke this operation. See boot.Service
+    // and its Up method for more information on the up-ing.
+    WhenUp bool
+
+    // Mark current aux operation for execution when a service is
+    // going down. Although it marks the operation to be executed when
+    // down-ing a service - it is entirely up to service implementation
+    // as to how or when to invoke this operation. See boot.Service
+    // and its Down method for more information on the down-ing.
+    WhenDown bool
+
     // Slice of environment names that designates where this aux op
     // should be made available. If an application is being booted with
     // the configured environment that is not in this slice - aux op

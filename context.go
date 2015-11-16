@@ -98,5 +98,5 @@ type Context struct {
     // within a process; but that's not a strict requirement. Pointer
     // will always point to a valid App structure and can never be nil.
     // The framework will take care of setting this pointer up.
-    Application *App
+    App *App
 }

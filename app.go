@@ -25,6 +25,7 @@ package boot
 
 import "os"
 import "time"
+import "os/signal"
 import "net/http"
 import "path/filepath"
 import "strings"
@@ -56,6 +57,7 @@ func New (slug, version string) *App {
     application.Reference = reference // set UUID
     application.Providers = make([]*Provider, 0)
     application.Services = make([]*Service, 0)
+    application.TimeLayout = time.RFC850
     return application // prepared app
 }
 
@@ -90,7 +92,23 @@ func (app *App) Boot(env, level, root string) {
 // the HTTP requests handler. Method will block until all servers are
 // stopped. See boot.App and this method implementation for details.
 func (app *App) Deploy() {
-    app.deployHttpServers()
+    for _, s := range app.Services { s.Up(app) }
+    cancelled := make(chan os.Signal, 1) // killed
+    signal.Notify(cancelled, os.Interrupt, os.Kill)
+    app.spawnHttpsServers() // spawn HTTPS and listen
+    app.spawnHttpServers() // spawn HTTP and listen
+    go func() { // run this in the background
+        _ = <- cancelled // waiting for signal
+        signal.Stop(cancelled) // stop monitoring
+        fmt.Fprintln(app.Journal.Out) // write ^C\n
+        moment := time.Now().Format(app.TimeLayout)
+        uptime := time.Now().Sub(app.Booted) // calc
+        for _, s := range app.Services { s.Down(app) }
+        log := app.Journal.WithField("time", moment)
+        log = log.WithField("uptime", uptime.String())
+        log.Warn("shutting the application down")
+        os.Exit(2) // emulate Ctrl-C exit code
+    }()
     app.finish.Wait()
 }
 
@@ -127,7 +145,6 @@ func (app *App) loadConfig(name, base string) *toml.TomlTree {
 // that should be implementing using a boot.Provider to do it.
 func (app *App) makeJournal(level logrus.Level) *logrus.Logger {
     const m = "begin writing application journal"
-    const t = time.RFC850 // time format for init
     var journal *logrus.Logger = &logrus.Logger {}
     formatter := new(logrus.TextFormatter) // std
     journal.Level = level // use requested level
@@ -140,7 +157,8 @@ func (app *App) makeJournal(level logrus.Level) *logrus.Logger {
     formatter.FullTimestamp = false // numbers
     formatter.TimestampFormat = time.StampMilli
     formatter.DisableSorting = false // order!
-    journal.WithField("time", time.Now()).Info(m)
+    moment := time.Now().Format(app.TimeLayout)
+    journal.WithField("time", moment).Info(m)
     return journal // is ready to use
 }
 
@@ -171,6 +189,13 @@ type App struct {
     // assets and a number of other things it may need. By default, it
     // will be set to the CWD directory that the app was launched in.
     RootDirectory string
+
+    // Default time layout (formatting template) to be used by the
+    // framework and application code, when it needs to output or send
+    // some dates & times that have no specific formatting requirement.
+    // This is prefferable way of doing it, rather than have different,
+    // inconsistent formatting in different portions of the code.
+    TimeLayout string
 
     // Short identifier of the logical environment that this instance
     // of the application is running in, such as: production, staging,

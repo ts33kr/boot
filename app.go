@@ -80,6 +80,7 @@ func (app *App) Boot(env, level, root string) {
     app.Storage = make(map[string] interface {})
     app.Config = app.loadConfig(app.Env, "config")
     app.Booted = time.Now() // mark app as booted
+    for _, s := range app.Services { s.Up(app) }
     log := app.Journal.WithField("env", app.Env)
     log = log.WithField("root", app.RootDirectory)
     log = log.WithField("level", parsedLevel)
@@ -92,7 +93,6 @@ func (app *App) Boot(env, level, root string) {
 // the HTTP requests handler. Method will block until all servers are
 // stopped. See boot.App and this method implementation for details.
 func (app *App) Deploy() {
-    for _, s := range app.Services { s.Up(app) }
     cancelled := make(chan os.Signal, 1) // killed
     signal.Notify(cancelled, os.Interrupt, os.Kill)
     app.spawnHttpsServers() // spawn HTTPS and listen

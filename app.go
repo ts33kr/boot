@@ -101,7 +101,7 @@ func (app *App) Deploy() {
     signal.Notify(cancelled, os.Interrupt, os.Kill)
     app.spawnHttpsServers() // spawn HTTPS and listen
     app.spawnHttpServers() // spawn HTTP and listen
-    go func() { // run this in the background
+    go func() { // this runs in the background
         _ = <- cancelled // waiting for signal
         signal.Stop(cancelled) // stop monitoring
         fmt.Fprintln(app.Journal.Out) // write ^C\n
@@ -112,7 +112,7 @@ func (app *App) Deploy() {
         log = log.WithField("uptime", uptime.String())
         log.Warn("shutting the application down")
         os.Exit(2) // emulate Ctrl-C exit code
-    }()
+    }() // run go-routine & wait to finish
     app.finish.Wait()
 }
 

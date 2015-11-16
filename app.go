@@ -93,6 +93,10 @@ func (app *App) Boot(env, level, root string) {
 // the HTTP requests handler. Method will block until all servers are
 // stopped. See boot.App and this method implementation for details.
 func (app *App) Deploy() {
+    var volume int = len(app.Services)
+    log := app.Journal.WithField("slug", app.Slug)
+    log = log.WithField("version", app.Version)
+    log.Infof("deploying app with %v services", volume)
     cancelled := make(chan os.Signal, 1) // killed
     signal.Notify(cancelled, os.Interrupt, os.Kill)
     app.spawnHttpsServers() // spawn HTTPS and listen

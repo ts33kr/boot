@@ -44,6 +44,13 @@ type Context struct {
     // be made mutually exclusive, using this embedded mutex.
     sync.Mutex
 
+    // Pointer to an Application structure that represent currently
+    // running application. Normally, there can be only one app struct
+    // within a process; but that's not a strict requirement. Pointer
+    // will always point to a valid App structure and can never be nil.
+    // The framework will take care of setting this pointer up.
+    App *App
+
     // Instant in time when this context object was created. This value
     // is used internally by the framework in a multiple of ways; and
     // may also be used by whoever is interested the time of when the
@@ -92,11 +99,4 @@ type Context struct {
     // rare occasions, it is possible that the pointer will have nil
     // value, indicating that there was no Service to attach.
     Service *Service
-
-    // Pointer to an Application structure that represent currently
-    // running application. Normally, there can be only one app struct
-    // within a process; but that's not a strict requirement. Pointer
-    // will always point to a valid App structure and can never be nil.
-    // The framework will take care of setting this pointer up.
-    App *App
 }

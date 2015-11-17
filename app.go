@@ -100,8 +100,8 @@ func (app *App) Deploy() {
     log.Infof("deploying app with %v services", volume)
     cancelled := make(chan os.Signal, 1) // killed
     signal.Notify(cancelled, os.Interrupt, os.Kill)
-    app.spawnHttpsServers() // spawn HTTPS and listen
-    app.spawnHttpServers() // spawn HTTP and listen
+    app.unfoldHttpsServers() // spawn HTTPS and listen
+    app.unfoldHttpServers() // spawn HTTP and listen
     go func() { // this runs in the background
         _ = <- cancelled // waiting for signal
         signal.Stop(cancelled) // stop monitoring

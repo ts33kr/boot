@@ -40,7 +40,7 @@ func (app *App) ServeHTTP(rw http.ResponseWriter, r *http.Request) {}
 // app server. Running an app server means configuring it with correct
 // parameters and bind it to the declared address to listen and accept
 // incoming HTTP requests. See boot.App.Deploy method for details.
-func (app *App) spawnHttpsServers() {
+func (app *App) unfoldHttpsServers() {
     log := app.Journal.WithField("proto", "HTTPS")
     const eempty = "no HTTPS app servers in a config"
     sections := app.Config.Get("app.servers.https")
@@ -72,7 +72,7 @@ func (app *App) spawnHttpsServers() {
 // app server. Running an app server means configuring it with correct
 // parameters and bind it to the declared address to listen and accept
 // incoming HTTP requests. See boot.App.Deploy method for details.
-func (app *App) spawnHttpServers() {
+func (app *App) unfoldHttpServers() {
     log := app.Journal.WithField("proto", "HTTP")
     const eempty = "no HTTP app servers in a config"
     sections := app.Config.Get("app.servers.http")

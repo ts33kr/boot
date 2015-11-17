@@ -96,6 +96,7 @@ func (app *App) Deploy() {
     var volume int = len(app.Services)
     log := app.Journal.WithField("slug", app.Slug)
     log = log.WithField("version", app.Version)
+    log = log.WithField("ref", app.Reference) // UID
     log.Infof("deploying app with %v services", volume)
     cancelled := make(chan os.Signal, 1) // killed
     signal.Notify(cancelled, os.Interrupt, os.Kill)

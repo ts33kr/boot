@@ -92,7 +92,7 @@ func (app *App) Boot(env, level, root string) {
 // addresses and ports. Every server will have this application set as
 // the HTTP requests handler. Method will block until all servers are
 // stopped. See boot.App and this method implementation for details.
-func (app *App) Deploy() {
+func (app *App) Deploy(s *Supervisor) {
     var volume int = len(app.Services)
     log := app.Journal.WithField("slug", app.Slug)
     log = log.WithField("version", app.Version)
@@ -236,6 +236,13 @@ type App struct {
     // of values that may be required by the application logic or the
     // framework logic. Beware, values are empty-interface typed.
     Storage map[string] interface {}
+
+    // Supervisor instance to use with this application instance. A
+    // supervisor is responsible for handling issues that might occur
+    // during the normal operation mode. Please refer to Supervisor
+    // interface definition & documentation for more information.
+    // Normally, a default supervisor should be used, as it is.
+    Supervisor *Supervisor
 
     // Configuration data for the application instance. This will be
     // populated by the framework, when the app is being launched. It

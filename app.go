@@ -34,8 +34,8 @@ import "sync"
 import "fmt"
 
 import "github.com/pelletier/go-toml"
+import "github.com/renstrom/shortuuid"
 import "github.com/Sirupsen/logrus"
-import "github.com/satori/go.uuid"
 import "github.com/blang/semver"
 
 // Create and initialize a new application. This is a front gate for
@@ -51,13 +51,13 @@ func New (slug, version string) *App {
     var parsed semver.Version = semver.MustParse(version)
     if !pattern.MatchString(slug) { panic(eslug) }
     if parsed.Validate() != nil { panic(eversion) }
-    reference := uuid.NewV5(uuid.NamespaceURL, url)
     application := &App { Slug: slug, Version: parsed }
     application.Servers = make(map[string]*http.Server)
-    application.Reference = reference // set UUID
+    application.Reference = shortuuid.New().UUID(url)
     application.Providers = make([]*Provider, 0)
     application.Services = make([]*Service, 0)
     application.TimeLayout = time.RFC850
+    application.Namespace = url // set
     return application // prepared app
 }
 
@@ -208,12 +208,19 @@ type App struct {
     // be kept as short, prererrably a 1-word ID, for convenience.
     Env string
 
+    // Default application namespace that will be used to generate
+    // UUID identificators of v5. This may potentially used by other
+    // consumers that need namespace declaration. Typically, value is
+    // going to be a stringified URL that designates some namespace.
+    // This field will be set by the framework automatically mostly.
+    Namespace string
+
     // Unique identifier of the application instance, conforming to a
-    // version 4 of the commonly known UUID standards. Every time an
+    // version 5 of the commonly known UUID standards. Every time an
     // application is launched - it gets a new UUID identifier that
     // uniquely represents the specific instance of the application.
     // So every time you start your application, it gets a new ID.
-    Reference uuid.UUID
+    Reference string
 
     // Root level logger, as configured by the framework, according to
     // the application and environment settings. Since the framework

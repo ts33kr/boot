@@ -28,7 +28,6 @@ import "net/http"
 import "sync"
 
 import "github.com/Sirupsen/logrus"
-import "github.com/satori/go.uuid"
 
 // Unique object that captures the details needed to invoke the Logic
 // typed function. Usually, context will include an HTTP request object,
@@ -59,11 +58,11 @@ type Context struct {
     Created time.Time
 
     // Unique identifier of the context instance, conforming to a
-    // version 4 of the commonly known UUID standards. Every time a
+    // version 5 of the commonly known UUID standards. Every time a
     // new context is created - it gets a new UUID identifier that
     // uniquely represents the specific instance of the contex, which
     // effectively represents every HTTP request that comes in.
-    Reference uuid.UUID
+    Reference string
 
     // Default logger to use with this context. As framework makes an
     // extensive usage of structured logging, this instance of logger

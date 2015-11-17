@@ -24,6 +24,7 @@
 package boot
 
 import "time"
+import "github.com/renstrom/shortuuid"
 
 // Function that is used to build up a service instance. It takes a
 // pointer to the service that has been pre-allocated and preliminary
@@ -41,8 +42,10 @@ func (srv *Service) Up(app *App) {
     srv.Erected = time.Now() // mark service as up
     context := &Context { App: app, Service: srv }
     log := app.Journal.WithField("service", srv.Slug)
+    ref := shortuuid.New().UUID(app.Namespace) // v5
     context.Created = srv.Erected // creation stamp
     context.Journal = log // setup derived logger
+    context.Reference = ref // assign a unique ID
     log.Info("booting application service up")
     for _, aux := range srv.Auxes { // walk auxes
         if aux.WhenUp { // is scheduled to execute?
@@ -64,8 +67,10 @@ func (srv *Service) Down(app *App) {
     srv.Erected = time.Time {} // set service down
     context := &Context { App: app, Service: srv }
     log := app.Journal.WithField("service", srv.Slug)
+    ref := shortuuid.New().UUID(app.Namespace) // v5
     context.Created = time.Now() // creation stamp
     context.Journal = log // setup derived logger
+    context.Reference = ref // assign a unique ID
     log.Info("taking application service down")
     for _, aux := range srv.Auxes { // walk auxes
         if aux.WhenDown { // is scheduled to execute?

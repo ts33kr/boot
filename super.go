@@ -43,4 +43,25 @@ type Supervisor interface {
     // respond to the client with the corresponding message and maybe
     // perform other, internal routines, such as write app journal.
     MethodNotAllowed(*Context)
+
+    // Invoked when an operation application has timed out. This could
+    // have happened due to different reasons. This can happen for aux
+    // operation as well as for endpoint. There is no strict algorithm
+    // as to when this method will be called, as the issues could be
+    // entirely handled within Operation and Pipeline coding.
+    OperationTimeout(*Context, *Operation)
+
+    // Invoked when an operation application has paniced. This could
+    // have happened due to different reasons. This can happen for aux
+    // operation as well as for endpoint. There is no strict algorithm
+    // as to when this method will be called, as the issues could be
+    // entirely handled within Operation and Pipeline coding.
+    OperationPaniced(*Context, *Operation, error)
+
+    // Invoked when the framework detects that the process has been
+    // running out of the memory limits as configured for application.
+    // It is then a responsibility of a supervisor to take (or not)
+    // action, such as reboot or stop the application process and/or
+    // notify the staff about a problem through available methods.
+    HittingMemLimits(*App)
 }

@@ -35,6 +35,7 @@ import "github.com/naoina/denco"
 // http.Server instances that will be created by the app deployment.
 // The boot.App application can, in fact, be mounted into any servers
 // that support the standard http.Handler interface and its methods.
+// Note, it will be invoked in a new go-routine by std HTTP stack.
 func (app *App) ServeHTTP(rw http.ResponseWriter, r *http.Request) {}
 
 // Create and configure an implementation of a HTTP request router.

@@ -33,6 +33,7 @@ import "regexp"
 import "sync"
 import "fmt"
 
+import "github.com/naoina/denco"
 import "github.com/pelletier/go-toml"
 import "github.com/renstrom/shortuuid"
 import "github.com/Sirupsen/logrus"
@@ -85,6 +86,7 @@ func (app *App) Boot(env, level, root string) {
     log = log.WithField("root", app.RootDirectory)
     log = log.WithField("level", parsedLevel)
     log.Info("application has been booted")
+    app.router = app.assembleRouter()
 }
 
 // Deploy the application. Spawn one or more of HTTP(s) servers, as
@@ -242,7 +244,14 @@ type App struct {
     // during the normal operation mode. Please refer to Supervisor
     // interface definition & documentation for more information.
     // Normally, a default supervisor should be used, as it is.
-    Supervisor *Supervisor
+    Supervisor Supervisor
+
+    // An HTTP request router that the app will use to match incoming
+    // requests against the registered endpoints that should handle the
+    // requests. The framework will build and maintain this router
+    // automatically; normally you should not be refering to this
+    // field directly. See Denco library docs for more details.
+    router *denco.Router
 
     // Configuration data for the application instance. This will be
     // populated by the framework, when the app is being launched. It

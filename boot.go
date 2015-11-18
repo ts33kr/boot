@@ -37,6 +37,13 @@ type BiasedLogic func (*Context)
 // common usage is a setup function that only needs an app to work.
 type UnbiasedLogic func (*App)
 
+// Pipeline is a structure that wraps an operation with all required
+// pieces of data and implementation to properly run it. It Basically
+// is a way of providing a permanent context for the operation that
+// is always constant, within one instance of the application. Please
+// see the structure implementation and usage for more information.
+type Pipeline struct { Operation Operation; Service *Service }
+
 // Something that contains a piece of application's business logic and
 // knows how to invoke it. Any operation within the framework can only
 // be invoked in with regards to an instance of the context structure.

@@ -23,10 +23,12 @@
 
 package boot
 
+import "strings"
 import "net/http"
 import "fmt"
 
 import "github.com/pelletier/go-toml"
+import "github.com/naoina/denco"
 
 // Implementation of http.Handler interface for boot.App struct. It
 // will be used to mount the application as HTTP request handler for
@@ -34,6 +36,36 @@ import "github.com/pelletier/go-toml"
 // The boot.App application can, in fact, be mounted into any servers
 // that support the standard http.Handler interface and its methods.
 func (app *App) ServeHTTP(rw http.ResponseWriter, r *http.Request) {}
+
+// Create and configure an implementation of a HTTP request router.
+// It will be used by the application to match incoming requests against
+// the endpoints that are meant to handle those requests. Current way
+// of implementation uses Denco library for routing. Please see the
+// Application.Router field, as well as the library documentation.
+func (app *App) assembleRouter() *denco.Router {
+    var router *denco.Router = denco.New()
+    const mloaded = "registered %v URL patterns"
+    app.Journal.Info("assembling request router")
+    records := make([]denco.Record, 0) // alloc
+    for _, srv := range app.Services {
+        for _, ep := range srv.Endpoints {
+            epp := strings.TrimPrefix(ep.Pattern, "/")
+            mask := fmt.Sprintf("%v/%v", srv.Prefix, epp)
+            pipe := &Pipeline {Operation: ep, Service: srv}
+            log := app.Journal.WithField("url", mask)
+            log = log.WithField("service", srv.Slug)
+            log.Debug("mounting endpoint into router")
+            record := denco.NewRecord(mask, pipe)
+            records = append(records, record)
+        } // inner loop actually builds records
+    } // build the router and check for errors
+    if err := router.Build(records); err != nil {
+        app.Journal.Fatal("failed to build router")
+        panic(err) // inability to build is fatal
+    } // if built successfully, return a router
+    app.Journal.Infof(mloaded, len(records))
+    return router // is ready for use
+}
 
 // Find all HTTPS application server declarations in the app config
 // and use the configuration data to create and run every declared

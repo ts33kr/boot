@@ -23,6 +23,8 @@
 
 package boot
 
+import "errors"
+
 // Function that encapsulates a unit of application's business logic.
 // It is a function of a context struct instance; function is used for
 // resolving (handling) HTTP requests that come into the app. Although
@@ -43,6 +45,27 @@ type UnbiasedLogic func (*App)
 // is always constant, within one instance of the application. Please
 // see the structure implementation and usage for more information.
 type Pipeline struct { Operation Operation; Service *Service }
+
+// Run the embedded business logic with the supplied context struct.
+// This method is responsible for running all pre-requisites prior to
+// the operation itself, such as - middleware and/or other utilities.
+// See the implementation code for more information. Also, please take
+// a look at the Apply method of the Operation interface definition.
+func (pipe *Pipeline) Invoke(*Context) {}
+
+// Error value to represent a situation when operation application
+// has timed out. This error value will be used by the framework to
+// indicate when some operation has failed to execute in the allocated
+// amount of time (supposedly configurable). Please see the usage of
+// this value by the framework or app code for more information.
+var OperationTimeout = errors.New("operation timed out")
+
+// Error value to represent a situation when a requested operation is
+// not available within the configured environment. The framework will
+// use this error value to indicate when some sort of operation invoked
+// but not available according to the app configuration. See usage of
+// this value by the framework or app code for more information.
+var OperationUnavailable = errors.New("operation is not available")
 
 // Something that contains a piece of application's business logic and
 // knows how to invoke it. Any operation within the framework can only

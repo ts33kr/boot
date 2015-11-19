@@ -71,6 +71,13 @@ type Context struct {
     // yet inherit fields that have already been set for context.
     Journal *logrus.Entry
 
+    // Aggregated storage of input parameters, collected of multiple
+    // source. When context represents an HTTP request, field typically
+    // contains URL parameters, query parameters and sometimes body
+    // parameters aggregated together. Contents of this field could
+    // be access and manipulates pretty much at at point of app.
+    Data map[string] string
+
     // General purpose storage for keeping key/value records per the
     // context instance. This storage may be used by the framework
     // as well as application code, to store and retrieve any sort
@@ -90,7 +97,7 @@ type Context struct {
     // been wrapped by this context instance. Note that in some very
     // rare occasions, it is possible that the pointer will have nil
     // value, indicating that there is no valid response writer.
-    Responder *http.ResponseWriter
+    Responder http.ResponseWriter
 
     // Pointer to a Service struct instance that a context could be
     // bound to. Usually, when an HTTP request comes in - it is being

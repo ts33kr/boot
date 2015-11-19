@@ -25,9 +25,12 @@ package boot
 
 import "strings"
 import "net/http"
+import "time"
 import "fmt"
 
+import "github.com/renstrom/shortuuid"
 import "github.com/pelletier/go-toml"
+import "github.com/Sirupsen/logrus"
 import "github.com/naoina/denco"
 
 // Implementation of http.Handler interface for boot.App struct. It
@@ -36,7 +39,38 @@ import "github.com/naoina/denco"
 // The boot.App application can, in fact, be mounted into any servers
 // that support the standard http.Handler interface and its methods.
 // Note, it will be invoked in a new go-routine by std HTTP stack.
-func (app *App) ServeHTTP(rw http.ResponseWriter, r *http.Request) {}
+func (app *App) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
+    ref := shortuuid.New().UUID(app.Namespace) // v5
+    context := &Context { App: app, Reference: ref }
+    context.Created = time.Now() // mark an instant
+    context.Responder = rw; context.Request = r
+    log := app.Journal.WithFields(logrus.Fields {
+        "ref": context.Reference, // a short UUID
+        "url": r.RequestURI, // the URL requested
+        "method": r.Method, // an HTTP method (verb)
+        "ip": r.RemoteAddr, // remote host & port
+    }) // the logger is compiled and ready for use
+    log.Info("accepted an incoming HTTP request")
+    rec, ps, hit := app.router.Lookup(r.RequestURI)
+    if !hit { // request did not match any endpoint
+        log.Warn("request did not match any route")
+        app.Supervisor.EndpointNotFound(context)
+        return // we are done with this request
+    } // ok, looks like request match an endpoint
+    var pipe *Pipeline = rec.(*Pipeline) // cast
+    var ep *Endpoint = pipe.Operation.(*Endpoint)
+    if !ep.Available[r.Method] { // not allowed
+        log.Warn("request method is not allowed")
+        app.Supervisor.MethodNotAllowed(context)
+        return // we are done with this request
+    } // ok, looks like request method fits in
+    context.Data = make(map[string] string)
+    context.Service = pipe.Service // restore
+    context.Journal = log // structured logger
+    d := context.Data // for convenient access
+    for _,p := range ps { d[p.Name] = p.Value }
+    pipe.Invoke(context) // fire up the pipe
+}
 
 // Create and configure an implementation of a HTTP request router.
 // It will be used by the application to match incoming requests against

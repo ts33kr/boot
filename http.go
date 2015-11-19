@@ -69,7 +69,7 @@ func (app *App) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
     context.Journal = log // structured logger
     d := context.Data // for convenient access
     for _,p := range ps { d[p.Name] = p.Value }
-    pipe.Invoke(context) // fire up the pipe
+    pipe.Cycle(context) // fire up the pipe
 }
 
 // Create and configure an implementation of a HTTP request router.

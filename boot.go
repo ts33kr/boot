@@ -51,7 +51,7 @@ type Pipeline struct { Operation Operation; Service *Service }
 // the operation itself, such as - middleware and/or other utilities.
 // See the implementation code for more information. Also, please take
 // a look at the Apply method of the Operation interface definition.
-func (pipe *Pipeline) Invoke(*Context) {}
+func (pipe *Pipeline) Cycle(*Context) {}
 
 // Error value to represent a situation when operation application
 // has timed out. This error value will be used by the framework to

@@ -83,7 +83,10 @@ func (app *App) Boot(env, level, root string) {
     app.Storage = make(map[string] interface {})
     app.Config = app.loadConfig(app.Env, "config")
     app.Booted = time.Now() // mark app as booted
-    for _, p := range app.Providers { p.Setup(app) }
+    for _, p := range app.Providers { // setups
+        if !p.Available[env] { continue }
+        p.Invoked = time.Now(); p.Setup(app)
+    } // all the providers have been invoked
     for _, s := range app.Services { s.Up(app) }
     log := app.Journal.WithField("env", app.Env)
     log = log.WithField("root", app.RootDirectory)

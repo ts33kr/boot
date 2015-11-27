@@ -60,27 +60,6 @@ var OperationTimeout = errors.New("operation timed out")
 // this value by the framework or app code for more information.
 var OperationUnavailable = errors.New("operation is not available")
 
-// Function that is used to build up a service instance. It takes a
-// pointer to the service that has been pre-allocated and preliminary
-// initialized before invoking the maker function, passing it through.
-// Service makers are going to be invoked during application launch.
-// Please refer to the service API for more information on usage.
-type ServiceBuilder func (*Service)
-
-// Function that is used to build up a endpoint instance. It takes a
-// pointer to the endpoint that has been pre-allocated and preliminary
-// initialized before invoking the maker function, passing it through.
-// endpoint makers are going to be invoked during application launch.
-// Please refer to the endpoint API for more information on usage.
-type EndpointBuilder func (*Endpoint)
-
-// Function that is used to build up an aux op instance. It takes a
-// pointer to the aux op that has been pre-allocated and preliminary
-// initialized before invoking the maker function, passing it through.
-// aux op makers are going to be invoked during application launch.
-// Please refer to the aux op API for more information on usage.
-type AuxBuilder func (*Aux)
-
 // Something that contains a piece of application's business logic and
 // knows how to invoke it. Any operation within the framework can only
 // be invoked in with regards to an instance of the context structure.

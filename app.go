@@ -135,9 +135,12 @@ func (app *App) loadConfig(name, base string) *toml.TomlTree {
     var root string = app.RootDirectory // root dir
     var fileName string = fmt.Sprintf("%s.toml", name)
     resolved := filepath.Join(root, base, fileName)
-    _, err := os.Stat(filepath.Clean(resolved))
-    if err != nil { panic(fmt.Errorf(estat, resolved)) }
-    configTree, err := toml.LoadFile(resolved)
+    var clean string = filepath.Clean(resolved)
+    log := app.Journal.WithField("file", clean)
+    log.Info("loading application config file")
+    _, err := os.Stat(clean) // check if file exists
+    if err != nil { panic(fmt.Errorf(estat, clean)) }
+    configTree, err := toml.LoadFile(clean) // load up!
     if err != nil { panic(fmt.Errorf(eload, err.Error())) }
     verStr := configTree.GetDefault("app.version", "")
     slug := configTree.GetDefault("app.slug", "n/a")

@@ -23,13 +23,6 @@
 
 package boot
 
-// String represenation of this operation, which is used mainly
-// for identification purposes when viewed by a human. The value
-// is not forced to be unique, but it should unambiguously state
-// the operation's identity that can be used by a developer to
-// trace it down right to its implementation or definition.
-func (ep *Endpoint) String() string { return ep.Pattern }
-
 // Implementation of the Operation interface; execute business logic
 // that is stored within an endpoint, in regards to supplied context
 // structure that should normally represent an HTTP request. See the
@@ -50,6 +43,13 @@ func (ep *Endpoint) Intermediate(*Service) []Middleware { return nil }
 // would typically let an HTTP client know about the error, by writing
 // to the Context.Responder with the appropriate code and message.
 func (ep *Endpoint) ReportIssue(context *Context, err error) {}
+
+// String represenation of this operation, which is used mainly
+// for identification purposes when viewed by a human. The value
+// is not forced to be unique, but it should unambiguously state
+// the operation's identity that can be used by a developer to
+// trace it down right to its implementation or definition.
+func (ep *Endpoint) String() string { return ep.Pattern }
 
 // Final destination of where an HTTP request lands when it comes via
 // the web application. This data structure holds the implementation

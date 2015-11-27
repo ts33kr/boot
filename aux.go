@@ -23,13 +23,6 @@
 
 package boot
 
-// String represenation of this operation, which is used mainly
-// for identification purposes when viewed by a human. The value
-// is not forced to be unique, but it should unambiguously state
-// the operation's identity that can be used by a developer to
-// trace it down right to its implementation or definition.
-func (aux *Aux) String() string { return aux.Slug }
-
 // Implementation of the Operation interface; execute business logic
 // that is stored within an aux op, in regards to supplied context
 // structure that represents some sort of arbitray context. See the
@@ -50,6 +43,13 @@ func (aux *Aux) Intermediate(*Service) []Middleware { return nil }
 // would typically journal the error to an application and/or context
 // journal and optionally use other mechanisms to expose the error.
 func (aux *Aux) ReportIssue(context *Context, err error) {}
+
+// String represenation of this operation, which is used mainly
+// for identification purposes when viewed by a human. The value
+// is not forced to be unique, but it should unambiguously state
+// the operation's identity that can be used by a developer to
+// trace it down right to its implementation or definition.
+func (aux *Aux) String() string { return aux.Slug }
 
 // Auxiliary operation, not tied into HTTP stack. Aux operations are
 // usually attached to services, but not necessarily. Usually, you would

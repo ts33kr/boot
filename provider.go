@@ -25,13 +25,6 @@ package boot
 
 import "time"
 
-// Function that is used to build up a provider instance. It takes a
-// pointer to the provider that has been pre-allocated and preliminary
-// initialized before invoking the maker function, passing it through.
-// provider makers are going to be invoked during application launch.
-// Please refer to the provider API for more information on usage.
-type ProviderBuilder func (*Provider)
-
 // Provider is an entity that proviedes some sort of functionality
 // for the application. Good example of this is a provider that could
 // provide a DB connection for application, by consuming the app config
@@ -45,6 +38,13 @@ type Provider struct {
     // of what this provider is intended for. This field should be set
     // via corresponding API; please do not modify this directly.
     About string
+
+    // Map of environment names that designates where this provider
+    // should be made available. If an application is being booted with
+    // the configured environment that is not in this slice - provider
+    // will not be available in that instance of the application. Refer
+    // to the App structure and its Env field for more information.
+    Available map[string] bool
 
     // Implementation of the provider. It should be the Setup typed
     // function that implements the business logic of the functionality

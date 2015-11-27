@@ -30,12 +30,26 @@ package boot
 // Please refer to the endpoint API for more information on usage.
 type EndpointBuilder func (*Endpoint)
 
+// String represenation of this operation, which is used mainly
+// for identification purposes when viewed by a human. The value
+// is not forced to be unique, but it should unambiguously state
+// the operation's identity that can be used by a developer to
+// trace it down right to its implementation or definition.
+func (ep *Endpoint) String() string { return ep.Pattern }
+
 // Implementation of the Operation interface; execute business logic
 // that is stored within an endpoint, in regards to supplied context
 // structure that should normally represent an HTTP request. See the
 // Operation interface for details. The method should be blocking; if
 // asynchronous behavior needed - must be implemented by the caller.
 func (ep *Endpoint) Apply(context *Context) error { return nil }
+
+// Fetch all the intermediary code (middleware) to run prior to
+// operation, using the supplied service as the permanent context.
+// Depending on the implementation of an op, middleware can either
+// be stored separately in its structure, or be combined with the
+// service middleware, depending on the op settings & coding.
+func (ep *Endpoint) Intermediate(*Service) []Middleware { return nil }
 
 // Implementation of the Operation interface; report the error that
 // might have occured during execution of the buiness logic implemented
@@ -71,6 +85,20 @@ type Endpoint struct {
     // will not be available in that instance of the application. Refer
     // to the App structure and its Env field for more information.
     Available map[string] bool
+
+    // Slice of middleware functions bound to this endpoint. These
+    // middleware shall be executed prior to actually executing the
+    // business logic embedded in the endpoint structure. For detailed
+    // information on middleware, please see Middleware type signature;
+    // also refer to the Operation interface definition and usage.
+    Middleware []Middleware
+
+    // Logical flag to control whether this endpoint should inherit
+    // certain properties from the service. Typically, such properties
+    // are middleware, environment availability, possibly other items.
+    // This flag may be used by any piece of code that is interested in
+    // it, which is usually the code that does application assembly.
+    Inherit bool
 
     // Pattern that is used to match an HTTP request against this
     // endpoint. Usually it is a mask of a partial URL (a path) that

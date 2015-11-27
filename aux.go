@@ -30,12 +30,26 @@ package boot
 // Please refer to the aux op API for more information on usage.
 type AuxBuilder func (*Aux)
 
+// String represenation of this operation, which is used mainly
+// for identification purposes when viewed by a human. The value
+// is not forced to be unique, but it should unambiguously state
+// the operation's identity that can be used by a developer to
+// trace it down right to its implementation or definition.
+func (aux *Aux) String() string { return aux.Slug }
+
 // Implementation of the Operation interface; execute business logic
 // that is stored within an aux op, in regards to supplied context
 // structure that represents some sort of arbitray context. See the
 // Operation interface for details. The method should be blocking; if
 // asynchronous behavior needed - must be implemented by the caller.
 func (aux *Aux) Apply(context *Context) error { return nil }
+
+// Fetch all the intermediary code (middleware) to run prior to
+// operation, using the supplied service as the permanent context.
+// Depending on the implementation of an op, middleware can either
+// be stored separately in its structure, or be combined with the
+// service middleware, depending on the op settings & coding.
+func (aux *Aux) Intermediate(*Service) []Middleware { return nil }
 
 // Implementation of the Operation interface; report the error that
 // might have occured during execution of the buiness logic implemented
@@ -79,12 +93,26 @@ type Aux struct {
     // and its Down method for more information on the down-ing.
     WhenDown bool
 
+    // Slice of middleware functions bound to this aux op. These
+    // middleware shall be executed prior to actually executing the
+    // business logic embedded in the auxiliary operation. For detailed
+    // information on middleware, please see Middleware type signature;
+    // also refer to the Operation interface definition and usage.
+    Middleware []Middleware
+
     // Map of environment names that designates where this aux op
     // should be made available. If an application is being booted with
     // the configured environment that is not in this slice - aux op
     // will not be available in that instance of the application. Refer
     // to the App structure and its Env field for more information.
     Available map[string] bool
+
+    // Logical flag to control whether this aux op should inherit
+    // certain properties from the service. Typically, such properties
+    // are middleware, environment availability, possibly other items.
+    // This flag may be used by any piece of code that is interested in
+    // it, which is usually the code that does application assembly.
+    Inherit bool
 
     // Implementation of the aux. Should be BiasedLogic typed
     // function that implements the business logic this aux op is

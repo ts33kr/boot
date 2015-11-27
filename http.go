@@ -69,7 +69,7 @@ func (app *App) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
     context.Journal = log // structured logger
     d := context.Data // for convenient access
     for _,p := range ps { d[p.Name] = p.Value }
-    pipe.Cycle(context) // fire up the pipe
+    pipe.Run(context) // fire up the pipe
 }
 
 // Create and configure an implementation of a HTTP request router.
@@ -87,6 +87,7 @@ func (app *App) assembleRouter() *denco.Router {
             epp := strings.TrimPrefix(ep.Pattern, "/")
             mask := fmt.Sprintf("%v/%v", srv.Prefix, epp)
             pipe := &Pipeline {Operation: ep, Service: srv}
+            pipe.Compile(app) // seal up pipeline instance
             log := app.Journal.WithField("url", mask)
             log = log.WithField("service", srv.Slug)
             log.Debug("mounting endpoint into router")

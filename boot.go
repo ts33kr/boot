@@ -39,19 +39,12 @@ type BiasedLogic func (*Context)
 // common usage is a setup function that only needs an app to work.
 type UnbiasedLogic func (*App)
 
-// Pipeline is a structure that wraps an operation with all required
-// pieces of data and implementation to properly run it. It Basically
-// is a way of providing a permanent context for the operation that
-// is always constant, within one instance of the application. Please
-// see the structure implementation and usage for more information.
-type Pipeline struct { Operation Operation; Service *Service }
-
-// Run the embedded business logic with the supplied context struct.
-// This method is responsible for running all pre-requisites prior to
-// the operation itself, such as - middleware and/or other utilities.
-// See the implementation code for more information. Also, please take
-// a look at the Apply method of the Operation interface definition.
-func (pipe *Pipeline) Cycle(*Context) {}
+// A middleware is a function that takes in a context and the next
+// function to call. Middleware is a simple concept that allows for an
+// elegent pre and post processing during invoking an operation. Every
+// middleware gets a context and a function to invoke in order to go to
+// processin next middleware or the operation itself, if it is last one.
+type Middleware func(*Context, BiasedLogic)
 
 // Error value to represent a situation when operation application
 // has timed out. This error value will be used by the framework to
@@ -74,12 +67,26 @@ var OperationUnavailable = errors.New("operation is not available")
 // used, it only cares about the ability to apply it to a context.
 type Operation interface {
 
+    // String represenation of this operation, which is used mainly
+    // for identification purposes when viewed by a human. The value
+    // is not forced to be unique, but it should unambiguously state
+    // the operation's identity that can be used by a developer to
+    // trace it down right to its implementation or definition.
+    String() string
+
     // Apply whatever business logic is stored in this operation to
     // an instance of the context structure, effectively - executing
     // the business logic. Panic handling must be encapsulated within
     // this method's implementation and in case if there was a panic,
     // its error value should be returned as the method's result.
     Apply(*Context) error
+
+    // Fetch all the intermediary code (middleware) to run prior to
+    // operation, using the supplied service as the permanent context.
+    // Depending on the implementation of an op, middleware can either
+    // be stored separately in its structure, or be combined with the
+    // service middleware, depending on the op settings & coding.
+    Intermediate(*Service) []Middleware
 
     // Request to make a report of an error that might have occured
     // while applying (executing) the operation. The way how an error

@@ -125,6 +125,13 @@ type Service struct {
     // for detailed information on the aux operations themselves.
     Auxes map[string] *Aux
 
+    // Slice of middleware functions bound to this service. These
+    // middleware shall be executed prior to actually executing the
+    // business logic embedded in any aux or endpoint. For detailed
+    // information on middleware, please see Middleware type signature;
+    // also refer to the Operation interface definition and usage.
+    Middleware []Middleware
+
     // Slice of endpoints that make up this service. Normally, field
     // should not be manipulated directly, but rather using framework
     // API for that. All endpoints within a group should usually share

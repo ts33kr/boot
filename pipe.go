@@ -33,8 +33,8 @@ func (pipe *Pipeline) Compile(app *App) {
         err := pipe.Operation.Apply(c) // run op
         if err != nil { // operation error-ed
             pipe.Operation.ReportIssue(c, err)
-        } // operation application is finished
-    } // innermost one actually executes the op
+        } // operation application has finished
+    } // innermost function actually executes a op
     middleware := make([]Middleware, 0) // allocate
     more := pipe.Operation.Intermediate(pipe.Service)
     middleware = append(middleware, more...) // add

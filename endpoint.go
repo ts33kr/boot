@@ -23,13 +23,6 @@
 
 package boot
 
-// Function that is used to build up a endpoint instance. It takes a
-// pointer to the endpoint that has been pre-allocated and preliminary
-// initialized before invoking the maker function, passing it through.
-// endpoint makers are going to be invoked during application launch.
-// Please refer to the endpoint API for more information on usage.
-type EndpointBuilder func (*Endpoint)
-
 // String represenation of this operation, which is used mainly
 // for identification purposes when viewed by a human. The value
 // is not forced to be unique, but it should unambiguously state

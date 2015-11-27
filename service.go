@@ -26,13 +26,6 @@ package boot
 import "time"
 import "github.com/renstrom/shortuuid"
 
-// Function that is used to build up a service instance. It takes a
-// pointer to the service that has been pre-allocated and preliminary
-// initialized before invoking the maker function, passing it through.
-// Service makers are going to be invoked during application launch.
-// Please refer to the service API for more information on usage.
-type ServiceBuilder func (*Service)
-
 // Get the service up and running. This method is typically called
 // by the framework, during the application deployment sequence. As
 // a rule, you would not need to call this method yourself. It will

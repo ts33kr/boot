@@ -23,13 +23,6 @@
 
 package boot
 
-// Function that is used to build up an aux op instance. It takes a
-// pointer to the aux op that has been pre-allocated and preliminary
-// initialized before invoking the maker function, passing it through.
-// aux op makers are going to be invoked during application launch.
-// Please refer to the aux op API for more information on usage.
-type AuxBuilder func (*Aux)
-
 // String represenation of this operation, which is used mainly
 // for identification purposes when viewed by a human. The value
 // is not forced to be unique, but it should unambiguously state

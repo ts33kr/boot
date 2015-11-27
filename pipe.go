@@ -31,7 +31,9 @@ package boot
 func (pipe *Pipeline) Compile(app *App) {
     pipe.onion = func (c *Context) { // prepare
         err := pipe.Operation.Apply(c) // run op
-        if err != nil { // operation error-ed
+        if err != nil { // operation has error-ed
+            var op Operation = pipe.Operation // alias
+            app.Supervisor.OperationPaniced(c, op, err)
             pipe.Operation.ReportIssue(c, err)
         } // operation application has finished
     } // innermost function actually executes a op

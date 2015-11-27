@@ -41,7 +41,7 @@ func (srv *Service) Up(app *App) {
     context.Reference = ref // assign a unique ID
     log.Info("booting application service up")
     for _, aux := range srv.Auxes { // walk auxes
-        if aux.WhenUp { // is scheduled to execute?
+        if aux.WhenUp && aux.Available[app.Env] {
             if e := aux.Apply(context); e != nil {
                 elog := log.WithField("aux", aux.Slug)
                 elog.Warn("issues during service up")
@@ -66,7 +66,7 @@ func (srv *Service) Down(app *App) {
     context.Reference = ref // assign a unique ID
     log.Info("taking application service down")
     for _, aux := range srv.Auxes { // walk auxes
-        if aux.WhenDown { // is scheduled to execute?
+        if aux.WhenDown && aux.Available[app.Env] {
             if e := aux.Apply(context); e != nil {
                 elog := log.WithField("aux", aux.Slug)
                 elog.Warn("issues during service down")

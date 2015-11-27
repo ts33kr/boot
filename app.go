@@ -38,6 +38,7 @@ import "github.com/pelletier/go-toml"
 import "github.com/renstrom/shortuuid"
 import "github.com/Sirupsen/logrus"
 import "github.com/blang/semver"
+import "github.com/robfig/cron"
 
 // Create and initialize a new application. This is a front gate for
 // the framework, since you should start by creating a new app struct.
@@ -53,6 +54,7 @@ func New (slug, version string) *App {
     if !pattern.MatchString(slug) { panic(eslug) }
     if parsed.Validate() != nil { panic(eversion) }
     application := &App { Slug: slug, Version: parsed }
+    application.CronEngine = cron.New() // create CRON
     application.Servers = make(map[string]*http.Server)
     application.Reference = shortuuid.New().UUID(url)
     application.Providers = make([]*Provider, 0)
@@ -87,6 +89,7 @@ func (app *App) Boot(env, level, root string) {
     log = log.WithField("root", app.RootDirectory)
     log = log.WithField("level", parsedLevel)
     log.Info("application has been booted")
+    app.CronEngine.Start() // launch CRON
     app.router = app.assembleRouter()
 }
 
@@ -271,6 +274,13 @@ type App struct {
     // multiple of ways; and may also be used by whoever is interested
     // the time of when exactly the application was launched.
     Booted time.Time
+
+    // The CRON engine that will be employed by the framework and an
+    // application to implement and run the peridoic jobs. Please see
+    // the Aux structure and its CronExpression field for usage. As
+    // well please refer to the github.com/robfig/cron packaged used
+    // for detailed information on the implemented employed.
+    CronEngine *cron.Cron
 
     // Map of HTTP servers that will be used to server application
     // instance. Servers are automatically created by the framework

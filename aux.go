@@ -91,7 +91,7 @@ type Aux struct {
     // when the operation is going to be launched. A contents of the
     // field supports a reasonable subset of the CRON expression
     // specification, including most of the keywords defined.
-    Cron string
+    CronExpression string
 
     // Slice of middleware functions bound to this aux op. These
     // middleware shall be executed prior to actually executing the

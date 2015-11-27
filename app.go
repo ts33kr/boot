@@ -81,6 +81,7 @@ func (app *App) Boot(env, level, root string) {
     app.Storage = make(map[string] interface {})
     app.Config = app.loadConfig(app.Env, "config")
     app.Booted = time.Now() // mark app as booted
+    for _, p := range app.Providers { p.Setup(app) }
     for _, s := range app.Services { s.Up(app) }
     log := app.Journal.WithField("env", app.Env)
     log = log.WithField("root", app.RootDirectory)
@@ -111,6 +112,7 @@ func (app *App) Deploy(s *Supervisor) {
         moment := time.Now().Format(app.TimeLayout)
         uptime := time.Now().Sub(app.Booted) // calc
         for _, s := range app.Services { s.Down(app) }
+        for _, p := range app.Providers { p.Cleanup(app) }
         log := app.Journal.WithField("time", moment)
         log = log.WithField("uptime", uptime.String())
         log.Warn("shutting the application down")

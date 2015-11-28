@@ -84,8 +84,9 @@ func (app *App) Boot(env, level, root string) {
     app.Config = app.loadConfig(app.Env, "config")
     app.Booted = time.Now() // mark app as booted
     for _, p := range app.Providers { // setups
-        if !p.Available[env] { continue }
-        p.Invoked = time.Now(); p.Setup(app)
+        if p.Available[env] { // is availale?
+            p.Invoked = time.Now(); p.Setup(app)
+        } // setup provider only if availale
     } // all the providers have been invoked
     for _, s := range app.Services { s.Up(app) }
     log := app.Journal.WithField("env", app.Env)
@@ -118,7 +119,11 @@ func (app *App) Deploy(s *Supervisor) {
         moment := time.Now().Format(app.TimeLayout)
         uptime := time.Now().Sub(app.Booted) // calc
         for _, s := range app.Services { s.Down(app) }
-        for _, p := range app.Providers { p.Cleanup(app) }
+        for _, p := range app.Providers { // cleanups
+            if !p.Invoked.IsZero() { // was invoked?
+                p.Cleanup(app); // run the cleanup
+            } // only cleanup the setup-ed ones
+        } // all the provider have been cleaned up
         log := app.Journal.WithField("time", moment)
         log = log.WithField("uptime", uptime.String())
         log.Warn("shutting the application down")

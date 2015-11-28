@@ -84,7 +84,7 @@ func (app *App) Boot(env, level, root string) {
     app.Config = app.loadConfig(app.Env, "config")
     app.Booted = time.Now() // mark app as booted
     for _, p := range app.Providers { // setups
-        if p.Available[env] { // is availale?
+        if p.Available[env] { // env available?
             p.Invoked = time.Now(); p.Setup(app)
         } // setup provider only if availale
     } // all the providers have been invoked

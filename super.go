@@ -51,6 +51,13 @@ type Supervisor interface {
     // entirely handled within Operation and Pipeline coding.
     OperationTimeout(*Context, Operation)
 
+    // Invoked when an operation is not availe in a current env. Could
+    // have happened due to different reasons. This can happen for aux
+    // operation as well as for endpoint. There is no strict algorithm
+    // as to when this method will be called, as the issues could be
+    // entirely handled within Operation and Pipeline coding.
+    OperationUnavailable(*Context, Operation)
+
     // Invoked when an operation application has paniced. This could
     // have happened due to different reasons. This can happen for aux
     // operation as well as for endpoint. There is no strict algorithm

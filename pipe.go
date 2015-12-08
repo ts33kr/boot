@@ -41,8 +41,8 @@ func (pipe *Pipeline) Compile(app *App) {
             } // we have dispatched the error value
             pipe.Operation.ReportIssue(c, err)
         } // operation application has finished
-    } // innermost function actually executes a op
-    middleware := make([]Middleware, 0) // allocate
+    } // innermost function actually executes op
+    var middleware = make([]Middleware, 0) // alloc
     more := pipe.Operation.Intermediate(pipe.Service)
     middleware = append(middleware, more...) // add
     for i := len(middleware) - 1; i >= 0; i-- {

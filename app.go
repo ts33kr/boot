@@ -127,6 +127,7 @@ func (app *App) Deploy(s *Supervisor) {
         log := app.Journal.WithField("time", moment)
         log = log.WithField("uptime", uptime.String())
         log.Warn("shutting the application down")
+        app.CronEngine.Stop() // stop CRON engine
         os.Exit(2) // emulate Ctrl-C exit code
     }() // run go-routine & wait to finish
     app.finish.Wait()

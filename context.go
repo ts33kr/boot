@@ -97,7 +97,7 @@ type Context struct {
     // been wrapped by this context instance. Note that in some very
     // rare occasions, it is possible that the pointer will have nil
     // value, indicating that there is no valid response writer.
-    Responder http.ResponseWriter
+    http.ResponseWriter
 
     // Pointer to a Service struct instance that a context could be
     // bound to. Usually, when an HTTP request comes in - it is being

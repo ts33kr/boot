@@ -118,7 +118,7 @@ type Endpoint struct {
 
     // Logical flag to control whether this endpoint should inherit
     // certain properties from the service. Typically, such properties
-    // are middleware, environment availability, possibly other items.
+    // could be a vector containing middleware, possibly other items.
     // This flag may be used by any piece of code that is interested in
     // it, which is usually the code that does application assembly.
     Inherit bool

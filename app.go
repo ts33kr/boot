@@ -152,16 +152,18 @@ func (app *App) loadConfig(name, base string) *toml.TomlTree {
     log.Info("loading application config file")
     _, err := os.Stat(clean) // check if file exists
     if err != nil { panic(fmt.Errorf(estat, clean)) }
-    configTree, err := toml.LoadFile(clean) // load up!
+    tree, err := toml.LoadFile(clean) // load config up!
     if err != nil { panic(fmt.Errorf(eload, err.Error())) }
-    req, ok := configTree.Get("app.require").(*toml.TomlTree)
-    if !ok { panic("missing app.require config section") }
-    version := req.GetDefault("version", app.Version.String())
-    slug := req.GetDefault("slug", app.Slug)
-    vr, _ := semver.ParseRange(version.(string))
-    if vr == nil || !vr(app.Version) { panic(ever) }
-    if slug != app.Slug { panic(eforeign) }
-    return configTree // config is ready
+    req, ok := tree.Get("app.require").(*toml.TomlTree)
+    if ok && req != nil { // check app requirements
+        var avr string = app.Version.String()
+        slug := req.GetDefault("slug", app.Slug)
+        version := req.GetDefault("version", avr)
+        vr, _ := semver.ParseRange(version.(string))
+        if vr == nil || !vr(app.Version) { panic(ever) }
+        if slug != app.Slug { panic(eforeign) }
+    } // assume requirements are satisfied
+    return tree // config tree is ready
 }
 
 // Build an adequate instance of the structured logger for this

@@ -39,11 +39,7 @@ func (ep *Endpoint) Apply(context *Context) error {
         return OperationUnavailable // N/A
     } // operation assured to be available
     go func() { // wrap as asynchronous code
-        var paniced interface {} // holds err
-        defer func() { // the panic safe-guard
-            paniced = recover() // may be nil
-            flag <- paniced // notify channel
-        }() // schedule for deferred execution
+        defer func() { flag <- recover() }()
         cl := context.Journal.WithField("ep", ep)
         cl.Debug("apply op (endpoint) to context")
         ep.Business(context) // run the BL!

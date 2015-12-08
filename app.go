@@ -296,7 +296,7 @@ type App struct {
     // for every corresponding section in the config file. This is
     // needed for applications that must be served on multiple ports
     // or network interfaces at the same time, within one process.
-    Servers map[string]*http.Server
+    Servers map[string] *http.Server
 
     // Application wide stop signal, implement as a wait group. After
     // the app is being booted the caller should wait on this group to

@@ -41,12 +41,16 @@ func (srv *Service) Up(app *App) {
     context.Reference = ref // assign a unique ID
     log.Info("booting application service up")
     for _, aux := range srv.Auxes { // walk auxes
+        aux.Pipeline = Pipeline { Operation: aux }
+        aux.Pipeline.Service = srv // bound the op
+        aux.Pipeline.Compile(app) // compile pipe
+        if ce := aux.CronExpression; len(ce) > 0 {
+            app.CronEngine.AddFunc(ce, func() {
+                aux.Run(context) // CRON-called
+            }) // schedule as a new CRON job
+        } // see if it needs to be invoked on up
         if aux.WhenUp && aux.Available[app.Env] {
-            if e := aux.Apply(context); e != nil {
-                elog := log.WithField("aux", aux.Slug)
-                elog.Warn("issues during service up")
-                aux.ReportIssue(context, e)
-            }
+            aux.Run(context) // invoke on up
         }
     }
 }
@@ -67,11 +71,7 @@ func (srv *Service) Down(app *App) {
     log.Info("taking application service down")
     for _, aux := range srv.Auxes { // walk auxes
         if aux.WhenDown && aux.Available[app.Env] {
-            if e := aux.Apply(context); e != nil {
-                elog := log.WithField("aux", aux.Slug)
-                elog.Warn("issues during service down")
-                aux.ReportIssue(context, e)
-            }
+            aux.Run(context) // invoke on down
         }
     }
 }

@@ -132,6 +132,13 @@ type Aux struct {
     // was used to invoke the operation will continue to spin though.
     Timeout time.Duration
 
+    // Embedded pipeline instance for this auxiliary operation. By the
+    // definition, an aux operation should be ad-hoc and self-contained.
+    // Therefore, this field will contain a pipeline that must be used
+    // to apply this aux operation. Refer to Service implementation
+    // about how the pipeline is construced. See its Up method.
+    Pipeline
+
     // Map of environment names that designates where this aux op
     // should be made available. If an application is being booted with
     // the configured environment that is not in this slice - aux op

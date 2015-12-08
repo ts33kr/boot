@@ -52,8 +52,8 @@ func (srv *Service) Up(app *App) {
             }) // schedule as a new CRON job
         } // see if it needs to be invoked on up
         if aux.WhenUp && aux.Available[app.Env] {
-            oplog.Info("scheduled to run on UP")
-            aux.Run(context) // invoke on up
+            oplog.Info("scheduled to run when UP")
+            aux.Run(context) // invoke on up-ing
         }
     }
 }
@@ -75,8 +75,8 @@ func (srv *Service) Down(app *App) {
     for _, aux := range srv.Auxes { // walk auxes
         oplog := log.WithField("aux", aux) // OP log
         if aux.WhenDown && aux.Available[app.Env] {
-            oplog.Info("scheduled to run on DOWN")
-            aux.Run(context) // invoke on down
+            oplog.Info("scheduled to run when DOWN")
+            aux.Run(context) // invoke on down-ing
         }
     }
 }

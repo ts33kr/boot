@@ -28,6 +28,8 @@ import "net/http"
 import "time"
 import "fmt"
 
+import stdlog "log"
+
 import "github.com/renstrom/shortuuid"
 import "github.com/pelletier/go-toml"
 import "github.com/Sirupsen/logrus"
@@ -43,7 +45,8 @@ func (app *App) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
     ref := shortuuid.New().UUID(app.Namespace) // v5
     context := &Context { App: app, Reference: ref }
     context.Created = time.Now() // mark an instant
-    context.Responder = rw; context.Request = r
+    context.ResponseWriter = rw // embed responder
+    context.Request = r // assign an HTTP request
     log := app.Journal.WithFields(logrus.Fields {
         "ref": context.Reference, // a short UUID
         "url": r.RequestURI, // the URL requested
@@ -59,7 +62,7 @@ func (app *App) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
     } // ok, looks like request match an endpoint
     var pipe *Pipeline = rec.(*Pipeline) // cast
     var ep *Endpoint = pipe.Operation.(*Endpoint)
-    if !ep.Available[r.Method] { // not allowed
+    if !ep.Methods[r.Method] { // method allowed?
         log.Warn("request method is not allowed")
         app.Supervisor.MethodNotAllowed(context)
         return // we are done with this request
@@ -109,6 +112,7 @@ func (app *App) assembleRouter() *denco.Router {
 // parameters and bind it to the declared address to listen and accept
 // incoming HTTP requests. See boot.App.Deploy method for details.
 func (app *App) unfoldHttpsServers() {
+    writer := app.Journal.Writer() // log writer
     log := app.Journal.WithField("proto", "HTTPS")
     const eempty = "no HTTPS app servers in a config"
     sections := app.Config.Get("app.servers.https")
@@ -123,6 +127,7 @@ func (app *App) unfoldHttpsServers() {
         port := config.Get("port-number").(int64)
         server := &http.Server { Handler: app }
         server.Addr = fmt.Sprintf("%v:%d", host, port)
+        server.ErrorLog = stdlog.New(writer, "", 0)
         app.Servers[intent] = server // store server
         app.finish.Add(1) // wait for one server
         go func() { // do not block on listening
@@ -130,6 +135,7 @@ func (app *App) unfoldHttpsServers() {
             log = log.WithField("intent", intent)
             log.Info("spawn application server")
             defer app.finish.Done() // clean up
+            defer writer.Close() // close writer
             panic(server.ListenAndServeTLS(cert, key))
         }()
     }
@@ -141,6 +147,7 @@ func (app *App) unfoldHttpsServers() {
 // parameters and bind it to the declared address to listen and accept
 // incoming HTTP requests. See boot.App.Deploy method for details.
 func (app *App) unfoldHttpServers() {
+    writer := app.Journal.Writer() // log writer
     log := app.Journal.WithField("proto", "HTTP")
     const eempty = "no HTTP app servers in a config"
     sections := app.Config.Get("app.servers.http")
@@ -153,6 +160,7 @@ func (app *App) unfoldHttpServers() {
         port := config.Get("port-number").(int64)
         server := &http.Server { Handler: app }
         server.Addr = fmt.Sprintf("%v:%d", host, port)
+        server.ErrorLog = stdlog.New(writer, "", 0)
         app.Servers[intent] = server // store server
         app.finish.Add(1) // wait for one server
         go func() { // do not block on listening
@@ -160,6 +168,7 @@ func (app *App) unfoldHttpServers() {
             log = log.WithField("intent", intent)
             log.Info("spawn application server")
             defer app.finish.Done() // clean up
+            defer writer.Close() // close writer
             panic(server.ListenAndServe())
         }()
     }

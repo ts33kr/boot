@@ -45,13 +45,14 @@ func (srv *Service) Up(app *App) {
         aux.Pipeline.Service = srv // bound the op
         aux.Pipeline.Compile(app) // compile pipe
         oplog := log.WithField("aux", aux) // OP log
+        if !aux.Available[app.Env] { return }
         if ce := aux.CronExpression; len(ce) > 0 {
             oplog.Infof("schedule CRON at %v", ce)
             app.CronEngine.AddFunc(ce, func() {
                 aux.Run(context) // CRON-called
-            }) // schedule as a new CRON job
+            }) // schedule as a new CRON task
         } // see if it needs to be invoked on up
-        if aux.WhenUp && aux.Available[app.Env] {
+        if aux.WhenUp { // invoke when service up
             oplog.Info("running aux on service up")
             aux.Run(context) // invoke on up-ing
         }
@@ -64,6 +65,7 @@ func (srv *Service) Up(app *App) {
 // clean-up the service, run all the relevant aux operation that
 // might have been marked for execution during service down-ing.
 func (srv *Service) Down(app *App) {
+    if srv.Erected.IsZero() { return } // is down
     srv.Erected = time.Time {} // set service down
     context := &Context { App: app, Service: srv }
     log := app.Journal.WithField("service", srv.Slug)

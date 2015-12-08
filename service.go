@@ -32,6 +32,7 @@ import "github.com/renstrom/shortuuid"
 // initialize the service, run all the relevant aux operation that
 // might have been marked for execution during service up-ing.
 func (srv *Service) Up(app *App) {
+    if !srv.Available[app.Env] { return } // N/A
     srv.Erected = time.Now() // mark service as up
     context := &Context { App: app, Service: srv }
     log := app.Journal.WithField("service", srv.Slug)

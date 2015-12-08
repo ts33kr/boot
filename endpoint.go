@@ -40,8 +40,6 @@ func (ep *Endpoint) Apply(context *Context) error {
     } // operation assured to be available
     go func() { // wrap as asynchronous code
         defer func() { flag <- recover() }()
-        cl := context.Journal.WithField("ep", ep)
-        cl.Debug("apply op (endpoint) to context")
         ep.Business(context) // run the BL!
     }() // spin off go-routine to execute it
     select { // wait for either of 2 channels

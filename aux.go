@@ -40,8 +40,6 @@ func (aux *Aux) Apply(context *Context) error {
     } // operation assured to be available
     go func() { // wrap as asynchronous code
         defer func() { flag <- recover() }()
-        cl := context.Journal.WithField("aux", aux)
-        cl.Debug("apply op (auxiliary) to context")
         aux.Business(context) // run the BL!
     }() // spin off go-routine to execute it
     select { // wait for either of 2 channels

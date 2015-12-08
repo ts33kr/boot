@@ -58,7 +58,7 @@ func (ep *Endpoint) Apply(context *Context) error {
 // Depending on the implementation of an op, middleware can either
 // be stored separately in its structure, or be combined with the
 // service middleware, depending on the op settings & coding.
-func (ep *Endpoint) Intermediate(*Service) []Middleware { return nil }
+func (ep *Endpoint) Intermediate(*Service) []Middleware { return ep.Middleware }
 
 // Implementation of the Operation interface; report the error that
 // might have occured during execution of the buiness logic implemented

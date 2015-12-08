@@ -142,7 +142,7 @@ func (app *App) Deploy(s *Supervisor) {
 func (app *App) loadConfig(name, base string) *toml.TomlTree {
     const eload = "failed to load TOML config\n %v"
     const estat = "could not open config file at %v"
-    const eold = "config version is older than app"
+    const ever = "app does not satifsy config version"
     const eforeign = "config is from different app"
     var root string = app.RootDirectory // root dir
     var fileName string = fmt.Sprintf("%s.toml", name)
@@ -154,10 +154,10 @@ func (app *App) loadConfig(name, base string) *toml.TomlTree {
     if err != nil { panic(fmt.Errorf(estat, clean)) }
     configTree, err := toml.LoadFile(clean) // load up!
     if err != nil { panic(fmt.Errorf(eload, err.Error())) }
-    verStr := configTree.GetDefault("app.version", "")
+    version := configTree.GetDefault("app.version", "")
     slug := configTree.GetDefault("app.slug", "n/a")
-    version := semver.MustParse(verStr.(string))
-    if version.LT(app.Version) { panic(eold) }
+    vr, _ := semver.ParseRange(version.(string))
+    if vr == nil || !vr(app.Version) { panic(ever) }
     if slug != app.Slug { panic(eforeign) }
     return configTree // config is ready
 }

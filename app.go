@@ -154,8 +154,10 @@ func (app *App) loadConfig(name, base string) *toml.TomlTree {
     if err != nil { panic(fmt.Errorf(estat, clean)) }
     configTree, err := toml.LoadFile(clean) // load up!
     if err != nil { panic(fmt.Errorf(eload, err.Error())) }
-    version := configTree.GetDefault("app.version", "")
-    slug := configTree.GetDefault("app.slug", "n/a")
+    req, ok := configTree.Get("app.require").(*toml.TomlTree)
+    if !ok { panic("missing app.require config section") }
+    version := req.GetDefault("version", app.Version.String())
+    slug := req.GetDefault("slug", app.Slug)
     vr, _ := semver.ParseRange(version.(string))
     if vr == nil || !vr(app.Version) { panic(ever) }
     if slug != app.Slug { panic(eforeign) }

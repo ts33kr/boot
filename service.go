@@ -24,6 +24,8 @@
 package boot
 
 import "time"
+
+import "github.com/Sirupsen/logrus"
 import "github.com/renstrom/shortuuid"
 
 // Get the service up and running. This method is typically called
@@ -35,7 +37,10 @@ func (srv *Service) Up(app *App) {
     if !srv.Available[app.Env] { return } // N/A
     srv.Erected = time.Now() // mark service as up
     context := &Context { App: app, Service: srv }
-    log := app.Journal.WithField("service", srv.Slug)
+    log := app.Journal.WithFields(logrus.Fields {
+        "service": srv.Slug, // short service name
+        "prefix": srv.Prefix, // URL prefix used
+    }) // logger descriptively identifies a service
     ref := shortuuid.New().UUID(app.Namespace) // v5
     context.Created = srv.Erected // creation stamp
     context.Journal = log // setup derived logger
@@ -69,7 +74,10 @@ func (srv *Service) Down(app *App) {
     if srv.Erected.IsZero() { return } // is down
     srv.Erected = time.Time {} // set service down
     context := &Context { App: app, Service: srv }
-    log := app.Journal.WithField("service", srv.Slug)
+    log := app.Journal.WithFields(logrus.Fields {
+        "service": srv.Slug, // short service name
+        "prefix": srv.Prefix, // URL prefix used
+    }) // logger descriptively identifies a service
     ref := shortuuid.New().UUID(app.Namespace) // v5
     context.Created = time.Now() // creation stamp
     context.Journal = log // setup derived logger

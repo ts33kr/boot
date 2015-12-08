@@ -23,12 +23,41 @@
 
 package boot
 
+import "time"
+import "fmt"
+
 // Implementation of the Operation interface; execute business logic
 // that is stored within an aux op, in regards to supplied context
 // structure that represents some sort of arbitray context. See the
 // Operation interface for details. The method should be blocking; if
 // asynchronous behavior needed - must be implemented by the caller.
-func (aux *Aux) Apply(context *Context) error { return nil }
+func (aux *Aux) Apply(context *Context) error {
+    var timer = time.After(aux.Timeout)
+    var flag = make(chan interface {}, 1)
+    const einv = "weird endpoint panic %v"
+    if !aux.Available[context.App.Env] {
+        return OperationUnavailable // N/A
+    } // operation assured to be available
+    go func() { // wrap as asynchronous code
+        var paniced interface {} // holds err
+        defer func() { // the panic safe-guard
+            paniced = recover() // may be nil
+            flag <- paniced // notify channel
+        }() // schedule for deferred execution
+        cl := context.Journal.WithField("aux", aux)
+        cl.Debug("apply op (auxiliary) to context")
+        aux.Business(context) // run the BL!
+    }() // spin off go-routine to execute it
+    select { // wait for either of 2 channels
+        case <- timer: return OperationTimeout
+        case x := <- flag: switch e := x.(type) {
+            case error: return e // regular panic
+            case nil: return nil // executed OK
+            // operation paniced with non-error
+            default: return fmt.Errorf(einv, e)
+        }
+    }
+}
 
 // Fetch all the intermediary code (middleware) to run prior to
 // operation, using the supplied service as the permanent context.
@@ -99,6 +128,13 @@ type Aux struct {
     // information on middleware, please see Middleware type signature;
     // also refer to the Operation interface definition and usage.
     Middleware []Middleware
+
+    // Amount of time after which the operation application should be
+    // considered timed out. If the operation application times out, a
+    // caller will be notified of this by returning the special value to
+    // it and of course unblocking the call stack. The go-routine that
+    // was used to invoke the operation will continue to spin though.
+    Timeout time.Duration
 
     // Map of environment names that designates where this aux op
     // should be made available. If an application is being booted with

@@ -23,6 +23,8 @@
 
 package boot
 
+import "runtime"
+
 // Watchdog is a default implementation of the app supervisor to
 // be used out of the box, without having to write your own one. It
 // should satifsy the very basic needs and functionality for handling
@@ -119,5 +121,5 @@ type Supervisor interface {
     // It is then a responsibility of a supervisor to take (or not)
     // action, such as reboot or stop the application process and/or
     // notify the staff about a problem through available methods.
-    HittingMemLimits(*App)
+    HittingMemLimits(*App, *runtime.MemStats)
 }

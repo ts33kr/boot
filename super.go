@@ -72,7 +72,7 @@ func (wd *Watchdog) OperationPaniced(*Context, Operation, error) {}
 // It is then a responsibility of a supervisor to take (or not)
 // action, such as reboot or stop the application process and/or
 // notify the staff about a problem through available methods.
-func (wd *Watchdog) HittingMemLimits(*App) {}
+func (wd *Watchdog) HittingMemLimits(*App, *runtime.MemStats) {}
 
 // Supervisor is responsible for handling issues that might occur
 // during the normal operation mode. These issues are typically needed

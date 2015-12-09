@@ -144,13 +144,6 @@ type Aux struct {
     // to the App structure and its Env field for more information.
     Available map[string] bool
 
-    // Logical flag to control whether this aux op should inherit
-    // certain properties from the service. Typically, such property
-    // could be a vector containing middleware, possibly other items.
-    // This flag may be used by any piece of code that is interested in
-    // it, which is usually the code that does application assembly.
-    Inherit bool
-
     // Implementation of the aux. Should be BiasedLogic typed
     // function that implements the business logic this aux op is
     // representing. It is invoked when the aux operation is being

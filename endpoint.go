@@ -116,13 +116,6 @@ type Endpoint struct {
     // was used to invoke the operation will continue to spin though.
     Timeout time.Duration
 
-    // Logical flag to control whether this endpoint should inherit
-    // certain properties from the service. Typically, such properties
-    // could be a vector containing middleware, possibly other items.
-    // This flag may be used by any piece of code that is interested in
-    // it, which is usually the code that does application assembly.
-    Inherit bool
-
     // Pattern that is used to match an HTTP request against this
     // endpoint. Usually it is a mask of a partial URL (a path) that
     // contains parameter placeholders and other pettern expressions.

@@ -43,7 +43,9 @@ func (pipe *Pipeline) Compile(app *App) {
         } // operation application has finished
     } // innermost function actually executes op
     var middleware = make([]Middleware, 0) // alloc
-    items := pipe.Operation.Intermediate() // obtain
+    var inherited = pipe.Service.Middleware // inherit
+    items := pipe.Operation.Intermediate() // obtained
+    middleware = append(middleware, inherited...) // add
     middleware = append(middleware, items...) // add
     for i := len(middleware) - 1; i >= 0; i-- {
         // reversed for natural order of chaining

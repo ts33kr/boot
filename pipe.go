@@ -23,12 +23,15 @@
 
 package boot
 
+import "time"
+
 // Seal up the pipeline and prepare for execution cycles. Current
 // implementation is responsible for building up the middleware chain.
 // This chain is an onion-like structure of closures that allow for
 // middlewares to be invoked in a fashion that allows for a middleware
 // to control ongoing flow of execution of the rest of the chain.
 func (pipe *Pipeline) Compile(app *App) {
+    pipe.Compiled = time.Now() // mark
     pipe.App = app // remember application
     pipe.onion = func (c *Context) { // prepare
         err := pipe.Operation.Apply(c) // run op
@@ -99,4 +102,11 @@ type Pipeline struct {
     // common data exchange bus between the endpoints that belong to
     // the same service. Refer to Service struct for more info.
     Service *Service
+
+    // Instant in time when the pipe object was compiled. This value
+    // is used internally by the framework in a multiple of ways; and
+    // may also be used by whoever is interested the time of when the
+    // context object has been instantiated. The value will be set by
+    // the framework, so please do not modify this value directly.
+    Compiled time.Time
 }

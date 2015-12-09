@@ -23,6 +23,55 @@
 
 package boot
 
+// Watchdog is a default implementation of the app supervisor to
+// be used out of the box, without having to write your own one. It
+// should satifsy the very basic needs and functionality for handling
+// the conditions as defined by the Supervisor interface. If something
+// more custom is necessary, you should implement your own Supervisor.
+type Watchdog struct {}
+
+// Invoked when an incoming HTTP request cannot be routed to any
+// endpoint, because it does not match any of the endpoints within
+// the application. This method should respond to the client with
+// the corresponding message and optionally perform other, internal
+// routines, such as writing to the application journal.
+func (wd *Watchdog) EndpointNotFound(*Context) {}
+
+// Invoked when an incoming HTTP request has been routed to one
+// endpoint while that endpoint does not allow for an HTTP method
+// (also known as verb) that have been requested. This method should
+// respond to the client with the corresponding message and maybe
+// perform other, internal routines, such as write app journal.
+func (wd *Watchdog) MethodNotAllowed(*Context) {}
+
+// Invoked when an operation application has timed out. This could
+// have happened due to different reasons. This can happen for aux
+// operation as well as for endpoint. There is no strict algorithm
+// as to when this method will be called, as the issues could be
+// entirely handled within Operation and Pipeline coding.
+func (wd *Watchdog) OperationTimeout(*Context, Operation) {}
+
+// Invoked when an operation is not availe in a current env. Could
+// have happened due to different reasons. This can happen for aux
+// operation as well as for endpoint. There is no strict algorithm
+// as to when this method will be called, as the issues could be
+// entirely handled within Operation and Pipeline coding.
+func (wd *Watchdog) OperationUnavailable(*Context, Operation) {}
+
+// Invoked when an operation application has paniced. This could
+// have happened due to different reasons. This can happen for aux
+// operation as well as for endpoint. There is no strict algorithm
+// as to when this method will be called, as the issues could be
+// entirely handled within Operation and Pipeline coding.
+func (wd *Watchdog) OperationPaniced(*Context, Operation, error) {}
+
+// Invoked when the framework detects that the process has been
+// running out of the memory limits as configured for application.
+// It is then a responsibility of a supervisor to take (or not)
+// action, such as reboot or stop the application process and/or
+// notify the staff about a problem through available methods.
+func (wd *Watchdog) HittingMemLimits(*App) {}
+
 // Supervisor is responsible for handling issues that might occur
 // during the normal operation mode. These issues are typically needed
 // to be handled in a uniformed fashion, despite their origin. Once an

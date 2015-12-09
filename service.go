@@ -41,7 +41,7 @@ func (srv *Service) Up(app *App) {
         "service": srv.Slug, // short service name
         "prefix": srv.Prefix, // URL prefix used
     }) // logger descriptively identifies a service
-    ref := shortuuid.New().UUID(app.Namespace) // v5
+    ref := shortuuid.NewWithNamespace(app.Namespace)
     context.Created = srv.Erected // creation stamp
     context.Journal = log // setup derived logger
     context.Reference = ref // assign a unique ID
@@ -78,7 +78,7 @@ func (srv *Service) Down(app *App) {
         "service": srv.Slug, // short service name
         "prefix": srv.Prefix, // URL prefix used
     }) // logger descriptively identifies a service
-    ref := shortuuid.New().UUID(app.Namespace) // v5
+    ref := shortuuid.NewWithNamespace(app.Namespace)
     context.Created = time.Now() // creation stamp
     context.Journal = log // setup derived logger
     context.Reference = ref // assign a unique ID

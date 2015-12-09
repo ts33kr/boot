@@ -56,7 +56,7 @@ func New (slug, version string) *App {
     application := &App { Slug: slug, Version: parsed }
     application.CronEngine = cron.New() // create CRON
     application.Servers = make(map[string]*http.Server)
-    application.Reference = shortuuid.New().UUID(url)
+    application.Reference = shortuuid.NewWithNamespace(url)
     application.Providers = make([]*Provider, 0)
     application.Services = make([]*Service, 0)
     application.TimeLayout = time.RFC850

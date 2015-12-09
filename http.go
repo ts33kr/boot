@@ -42,7 +42,7 @@ import "github.com/naoina/denco"
 // that support the standard http.Handler interface and its methods.
 // Note, it will be invoked in a new go-routine by std HTTP stack.
 func (app *App) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
-    ref := shortuuid.New().UUID(app.Namespace) // v5
+    ref := shortuuid.NewWithNamespace(app.Namespace)
     context := &Context { App: app, Reference: ref }
     context.Created = time.Now() // mark an instant
     context.ResponseWriter = rw // embed responder

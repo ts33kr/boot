@@ -41,10 +41,9 @@ func (srv *Service) Up(app *App) {
         "service": srv.Slug, // short service name
         "prefix": srv.Prefix, // URL prefix used
     }) // logger descriptively identifies a service
-    ref := shortuuid.NewWithNamespace(app.Namespace)
     context.Created = srv.Erected // creation stamp
     context.Journal = log // setup derived logger
-    context.Reference = ref // assign a unique ID
+    context.Reference = shortuuid.New() // V4
     log.Info("booting application service up")
     for _, aux := range srv.Auxes { // walk auxes
         aux.Pipeline = Pipeline { Operation: aux }
@@ -78,10 +77,9 @@ func (srv *Service) Down(app *App) {
         "service": srv.Slug, // short service name
         "prefix": srv.Prefix, // URL prefix used
     }) // logger descriptively identifies a service
-    ref := shortuuid.NewWithNamespace(app.Namespace)
     context.Created = time.Now() // creation stamp
     context.Journal = log // setup derived logger
-    context.Reference = ref // assign a unique ID
+    context.Reference = shortuuid.New() // V4
     log.Info("taking application service down")
     for _, aux := range srv.Auxes { // walk auxes
         oplog := log.WithField("aux", aux) // OP log

@@ -29,6 +29,7 @@ package boot
 // middlewares to be invoked in a fashion that allows for a middleware
 // to control ongoing flow of execution of the rest of the chain.
 func (pipe *Pipeline) Compile(app *App) {
+    pipe.App = app // remember application
     pipe.onion = func (c *Context) { // prepare
         err := pipe.Operation.Apply(c) // run op
         if err != nil { // operation ended with error
@@ -84,6 +85,13 @@ type Pipeline struct {
     // is agnostic of what that operation exactly is, as long as it is
     // properly implementing the Operation interface abstraction.
     Operation Operation
+
+    // Pointer to an Application structure that represent currently
+    // running application. Normally, there can be only one app struct
+    // within a process; but that's not a strict requirement. Pointer
+    // will always point to a valid App structure and can never be nil.
+    // The framework will take care of setting this pointer up.
+    App *App
 
     // Holds a pointer to a service that represents kind of permanent
     // context to be used to run the operation. Service is a group of

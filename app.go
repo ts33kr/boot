@@ -110,6 +110,7 @@ func (app *App) Deploy(sv Supervisor) {
     log.Infof("deploying app with %v services", volume)
     cancelled := make(chan os.Signal, 1) // killed
     signal.Notify(cancelled, os.Interrupt, os.Kill)
+    app.Supervisor = sv // install app-wide supervisor
     app.unfoldHttpsServers() // spawn HTTPS and listen
     app.unfoldHttpServers() // spawn HTTP and listen
     go func() { // this runs in the background

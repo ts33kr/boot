@@ -102,7 +102,7 @@ func (app *App) Boot(env, level, root string) {
 // addresses and ports. Every server will have this application set as
 // the HTTP requests handler. Method will block until all servers are
 // stopped. See boot.App and this method implementation for details.
-func (app *App) Deploy(s *Supervisor) {
+func (app *App) Deploy(sv Supervisor) {
     var volume int = len(app.Services)
     log := app.Journal.WithField("slug", app.Slug)
     log = log.WithField("version", app.Version)

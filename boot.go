@@ -84,9 +84,9 @@ type Operation interface {
     // Fetch all the intermediary code (middleware) to run prior to
     // operation, using the supplied service as the permanent context.
     // Depending on the implementation of an op, middleware can either
-    // be stored separately in its structure, or be combined with the
-    // service middleware, depending on the op settings & coding.
-    Intermediate(*Service) []Middleware
+    // be stored separately in its structure, or be dynamically built
+    // based on the specific implementation of Operation interface.
+    Intermediate() []Middleware
 
     // Request to make a report of an error that might have occured
     // while applying (executing) the operation. The way how an error

@@ -43,8 +43,8 @@ func (pipe *Pipeline) Compile(app *App) {
         } // operation application has finished
     } // innermost function actually executes op
     var middleware = make([]Middleware, 0) // alloc
-    more := pipe.Operation.Intermediate(pipe.Service)
-    middleware = append(middleware, more...) // add
+    items := pipe.Operation.Intermediate() // obtain
+    middleware = append(middleware, items...) // add
     for i := len(middleware) - 1; i >= 0; i-- {
         // reversed for natural order of chaining
         peek := pipe.onion // remember peek layer

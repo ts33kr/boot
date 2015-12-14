@@ -86,7 +86,8 @@ func (srv *Service) Down(app *App) {
     log.Info("taking application service down")
     for _, aux := range srv.Auxes { // walk auxes
         oplog := log.WithField("aux", aux) // OP log
-        if aux.WhenDown && aux.Available[app.Env] {
+        if aux.Satisfied(context) != nil { continue }
+        if aux.WhenDown { // invoke when service down
             oplog.Info("running aux on service down")
             aux.Run(context) // invoke on down-ing
         }

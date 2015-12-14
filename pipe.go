@@ -48,7 +48,7 @@ func (pipe *Pipeline) Compile(app *App) {
     } // innermost function actually executes op
     var middleware = make([]Middleware, 0) // alloc
     var inherited = pipe.Service.Middleware // inherit
-    items := pipe.Operation.Intermediate() // obtained
+    items := pipe.Operation.Prologue() // obtain items
     middleware = append(middleware, inherited...) // add
     middleware = append(middleware, items...) // add
     for i := len(middleware) - 1; i >= 0; i-- {

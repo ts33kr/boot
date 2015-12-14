@@ -81,12 +81,12 @@ type Operation interface {
     // its error value should be returned as the method's result.
     Apply(*Context) error
 
-    // Fetch all the intermediary code (middleware) to run prior to
-    // operation, using the supplied service as the permanent context.
+    // Fetch prologue code (i.e. middleware) items: these are required
+    // to be run within context prior to running the operation itself.
     // Depending on the implementation of an op, middleware can either
     // be stored separately in its structure, or be dynamically built
     // based on the specific implementation of Operation interface.
-    Intermediate() []Middleware
+    Prologue() []Middleware
 
     // Request to make a report of an error that might have occured
     // while applying (executing) the operation. The way how an error

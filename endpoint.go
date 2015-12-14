@@ -53,12 +53,12 @@ func (ep *Endpoint) Apply(context *Context) error {
     }
 }
 
-// Fetch all the intermediary code (middleware) to run prior to
-// operation, using the supplied service as the permanent context.
+// Fetch prologue code (i.e. middleware) items: these are required
+// to be run within context prior to running the operation itself.
 // Depending on the implementation of an op, middleware can either
 // be stored separately in its structure, or be dynamically built
 // based on the specific implementation of Operation interface.
-func (ep *Endpoint) Intermediate() []Middleware { return ep.Middleware }
+func (ep *Endpoint) Prologue() []Middleware { return ep.Middleware }
 
 // Implementation of the Operation interface; report the error that
 // might have occured during execution of the buiness logic implemented

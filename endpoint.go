@@ -36,7 +36,7 @@ func (ep *Endpoint) Apply(context *Context) error {
     var timer = time.After(ep.Timeout)
     var flag = make(chan interface {}, 1)
     const einv = "weird endpoint panic %v"
-    if !ep.Available[context.App.Env] {
+    if ep.Satisfied(context) != nil {
         return OperationUnavailable // N/A
     } // operation assured to be available
     go func() { // wrap as asynchronous code

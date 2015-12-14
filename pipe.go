@@ -75,6 +75,13 @@ func (pipe *Pipeline) Run(context *Context) { pipe.onion(context) }
 // see the structure implementation and usage for more information.
 type Pipeline struct {
 
+    // Pointer to an Application structure that represent currently
+    // running application. Normally, there can be only one app struct
+    // within a process; but that's not a strict requirement. Pointer
+    // will always point to a valid App structure and can never be nil.
+    // The framework will take care of setting this pointer up.
+    App *App
+
     // Currently compiled onion of closures that represents operation
     // application wrapped in 0 to N layers of middleware. This is an
     // internal field and it should only be used by the Pipeline struct
@@ -88,13 +95,6 @@ type Pipeline struct {
     // is agnostic of what that operation exactly is, as long as it is
     // properly implementing the Operation interface abstraction.
     Operation Operation
-
-    // Pointer to an Application structure that represent currently
-    // running application. Normally, there can be only one app struct
-    // within a process; but that's not a strict requirement. Pointer
-    // will always point to a valid App structure and can never be nil.
-    // The framework will take care of setting this pointer up.
-    App *App
 
     // Holds a pointer to a service that represents kind of permanent
     // context to be used to run the operation. Service is a group of

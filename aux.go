@@ -30,7 +30,8 @@ import "fmt"
 // that is stored within an aux op, in regards to supplied context
 // structure that represents some sort of arbitray context. See the
 // Operation interface for details. The method should be blocking; if
-// asynchronous behavior needed - must be implemented by the caller.
+// asynchronous behavior intended - the caller must ensure that this
+// method syncrhonizes on the asynchronous code to return onces done.
 func (aux *Aux) Apply(context *Context) error {
     var timer = time.After(aux.Timeout)
     var flag = make(chan interface {}, 1)

@@ -48,9 +48,9 @@ func (pipe *Pipeline) Compile(app *App) {
     } // innermost function actually executes op
     var middleware = make([]Middleware, 0) // alloc
     var inherited = pipe.Service.Middleware // inherit
-    items := pipe.Operation.Prologue() // obtain items
+    rings := pipe.Operation.OnionRings() // obtain rings
     middleware = append(middleware, inherited...) // add
-    middleware = append(middleware, items...) // add
+    middleware = append(middleware, rings...) // add
     for i := len(middleware) - 1; i >= 0; i-- {
         // reversed for natural order of chaining
         peek := pipe.onion // remember peek layer

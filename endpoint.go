@@ -54,6 +54,13 @@ func (ep *Endpoint) Apply(context *Context) error {
     }
 }
 
+// Check whether the operation is satisfied with supplied context.
+// If not - then it is safe to assume that the operation will not
+// be available, and its application with yield the corresponding
+// error. The exact logic behind this check is determined by the
+// implementation. Must return some error value is not satisfied.
+func (ep *Endpoint) Satisfied(*Context) error { return nil }
+
 // Fetch prologue & epilogue code (middleware): these are required
 // to be run within context prior to running the operation itself.
 // Depending on the implementation of an op, middleware can either

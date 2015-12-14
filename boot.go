@@ -94,4 +94,11 @@ type Operation interface {
     // This method should be invoked with error that might have been
     // handed off by the Apply method, upon method's completion.
     ReportIssue(*Context, error)
+
+    // Check whether the operation is satisfied with supplied context.
+    // If not - then it is safe to assume that the operation will not
+    // be available, and its application with yield the corresponding
+    // error. The exact logic behind this check is determined by the
+    // implementation. Must return some error value is not satisfied.
+    Satisfied(*Context) error
 }

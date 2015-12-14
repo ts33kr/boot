@@ -53,7 +53,7 @@ func (srv *Service) Up(app *App) {
         aux.Pipeline.Service = srv // bound the op
         aux.Pipeline.Compile(app) // compile pipe
         oplog := log.WithField("aux", aux) // OP log
-        if !aux.Available[app.Env] { continue }
+        if aux.Satisfied(context) != nil { continue }
         if ce := aux.CronExpression; len(ce) > 0 {
             oplog.Infof("schedule CRON at %v", ce)
             app.CronEngine.AddFunc(ce, func() {

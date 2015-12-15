@@ -33,19 +33,22 @@ import "fmt"
 // asynchronous behavior intended - the caller must ensure that this
 // method syncrhonizes on the asynchronous code to return onces done.
 func (ep *Endpoint) Apply(context *Context) error {
-    var timer = time.After(ep.Timeout)
-    var flag = make(chan interface {}, 1)
-    const einv = "weird endpoint panic %v"
-    if ep.Satisfied(context) != nil {
-        return OperationUnavailable // N/A
+    timer := time.After(ep.Timeout) // ticker
+    value := make(chan interface {}, 1) // panic
+    const einv = "undetermined endpoint panic %v"
+    if e := ep.Satisfied(context); e != nil {
+        elog := context.Journal.WithError(e)
+        elog = elog.WithField("operation", ep)
+        elog.Warn("epiliary is not available")
+        return OperationUnavailable // is N/A
     } // operation assured to be available
     go func() { // wrap as asynchronous code
-        defer func() { flag <- recover() }()
+        defer func() { value <- recover() }()
         ep.Business(context) // run the BL!
     }() // spin off go-routine to execute it
     select { // wait for either of 2 channels
         case <- timer: return OperationTimeout
-        case x := <- flag: switch e := x.(type) {
+        case x := <- value: switch e := x.(type) {
             case error: return e // regular panic
             case nil: return nil // executed OK
             // operation paniced with non-error

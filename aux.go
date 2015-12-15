@@ -83,7 +83,7 @@ func (aux *Aux) ReportIssue(context *Context, err error) {}
 // is not forced to be unique, but it should unambiguously state
 // the operation's identity that can be used by a developer to
 // trace it down right to its implementation or definition.
-func (aux *Aux) String() string { return aux.Slug }
+func (aux *Aux) String() string { return aux.Handle }
 
 // Auxiliary operation, not tied into HTTP stack. Aux operations are
 // usually attached to services, but not necessarily. Usually, you would
@@ -92,12 +92,12 @@ func (aux *Aux) String() string { return aux.Slug }
 // same operation more than once. Uses BiasedLogic to store logic.
 type Aux struct {
 
-    // Slug is a short name (or tag) that identifies specific aux op.
-    // It is advised to keep it machine & human readable: in a form of
-    // of a slug - no spaces, all lower case, et cetera. The framework
-    // itself, as well as any other code could use this variable to
-    // unique identify and label some aux op for referencing it.
-    Slug string
+    // Handle is an identification tag that is both: human and machine
+    // readable. It's purpose is uniquely addressing auxiliary operation
+    // within the containing service. In other words, this is just the
+    // name of the operation that can be used to refer to the operation.
+    // Please refer to its usage for examples and better understanding.
+    Handle string
 
     // Mark current aux operation for execution when a service is
     // getting up. Although it marks the operation to be executed when

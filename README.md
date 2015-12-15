@@ -9,19 +9,18 @@ of the framework is to let you write your business logic since 1-st
 line of code, without having to write all the usual boilerplate code
 that is necessary to power a production application and its deployment.
 Here is a list of some of the features supported out of the box.
-  
+
 * **Strong REST & JSON architecture with SOA approach**
 * **Out of the box statistics and measurements essentials**
+* **Essentials for authentication & access control with JWT**
 * **Expose inventory & docs for endpoints defined in the app**
 * Switching app environments: dev, production, staging, etc
 * Automatically load a config (TOML) based on the environment
-* Flexible URL routing with placeholders, hosts and patterns
-* Structured logger is automatically available in the app
+* Flexible URL routing with placeholders, masks and patterns
+* Structured logger is automatically available within the app
 * Middleware support on a per-endpoint and per-service basis
-* Shipped with essentials for authentication & access control
 * Auto connecting to multiple DBs by just adding config sections
 * Support for MongoDB & major SQL databases out of the box
-* Support for Redis as session, cache & general purpose storage
 * High performance and efficient memory consumption
 * Efficiently serving static resources (asset files)
 
@@ -40,7 +39,7 @@ its immediate implementation will usually be typed under **boot.BiasedLogic**
 type, meaning a function that takes in the context. Any application code
 will eventually be exposed via **boot.Operation** interface that knows how
 to execute that code within a context of **boot.Context** structure. Under
-the hood, you would use one of the two follwing structures to store the code.
+the hood, you would use one of the two following structures to store the code.
 
 * **boot.Endpoint** - is a piece of application's business logic that
 is exposed through the HTTP interface directly. It has an HTTP verb and
@@ -49,7 +48,7 @@ fetching the HTTP request with all its data, as well as an ability to
 respond to it with a JSON encoded HTTP response.
 
 * **boot.Aux** - is a piece of application's business logic that
-is exposed as an auxilirary operation. It could be invoked by endpoints
+is exposed as an auxiliary operation. It could be invoked by endpoints
 or by another auxiliary operations. Operations in one service can easily
 call auxiliary operations of other services. All the communication between
 the caller and an aux operation should be implemented via the context.

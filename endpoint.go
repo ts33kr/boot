@@ -92,13 +92,6 @@ func (ep *Endpoint) String() string { return ep.Pattern }
 // created or manipulated directly; use framework API for that.
 type Endpoint struct {
 
-    // Description of the endpoint; it should be a short and succinct
-    // synopsis of what this endpoint does, as a human readable string.
-    // Keep it short yet descriptive enough to understand a basic idea
-    // of what this endpoint is intended for. This field should be set
-    // via corresponding API; please do not modify this directly.
-    About string
-
     // Map of HTTP methods (also known as verbs) that could be used
     // to invoke this endpoint through an HTTP request. Same endpoint
     // can respond to multiple HTTP methods, with possibly different

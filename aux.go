@@ -99,13 +99,6 @@ type Aux struct {
     // unique identify and label some aux op for referencing it.
     Slug string
 
-    // Description of the aux; it should be a short and succinct
-    // synopsis of what this aux does, as a human readable string.
-    // Keep it short yet descriptive enough to understand a basic idea
-    // of what this aux is intended for. This field should be set
-    // via corresponding API; please do not modify this directly.
-    About string
-
     // Mark current aux operation for execution when a service is
     // getting up. Although it marks the operation to be executed when
     // up-ing the service - it is entirely up to service implementation

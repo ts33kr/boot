@@ -33,8 +33,8 @@ import "github.com/renstrom/shortuuid"
 // initialize the service, run all the relevant aux operation that
 // might have been marked for execution during service up-ing.
 func (srv *Service) Up(app *App) {
-    context := &Context { App: app, Service: srv }
     log := app.Journal.WithField("service", srv)
+    context := &Context { App: app, Service: srv }
     if !srv.Available[app.Env] { // check the env
         log.Warn("is not available in this env")
         return // stop booting, is not available
@@ -70,9 +70,9 @@ func (srv *Service) Up(app *App) {
 // might have been marked for execution during service down-ing.
 func (srv *Service) Down(app *App) {
     if srv.Erected.IsZero() { return } // down
+    log := app.Journal.WithField("service", srv)
     srv.Erected = time.Time {} // set service down
     context := &Context { App: app, Service: srv }
-    log := app.Journal.WithField("service", srv)
     context.Created = time.Now() // creation stamp
     context.Journal = log // setup derived logger
     context.Reference = shortuuid.New() // V4

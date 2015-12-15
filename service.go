@@ -141,7 +141,7 @@ type Service struct {
     // as well as application code, to store and retrieve any sort
     // of values that may be required by the service logic or the
     // framework logic. Beware, values are empty-interface typed.
-    Storage map[string] interface {}
+    Storage
 
     // Instant in time when the service was brought up. A nil value
     // should indicate that current service instance has not yet been

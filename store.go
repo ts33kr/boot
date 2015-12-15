@@ -23,29 +23,26 @@
 
 package boot
 
-// Create and install a new service into the current app. Method
-// takes the origin function that will take the service instance and
-// properly set it up. The service instance itself will be allocated by
-// this method and automatically installed within the application. Any
-// modifications could be made to the service instance afterwards.
-func (app *App) Service(origin func(*Service)) *Service {
-    if !app.Booted.IsZero() { // app is booted?
-        panic("refusing to modify the booted app")
-    } // app is not yet booted; we are good to go
-    if origin == nil { // maker points to nowhere?
-        panic("missing the service origin function")
-    } // origin is intact, we shall invoke it later
-    var service *Service = &Service {} // allocate
-    var room = make(map[string] interface {})
-    service.Available = make(map[string] bool)
-    service.Storage = Storage { Container: room }
-    service.Auxes = make(map[string] *Aux)
-    origin(service) // service is made right here
-    if len(service.Prefix) == 0 { // empty prefix
-        panic("missing mandatory service prefix")
-    } // looks like service was properly assembled
-    app.Lock() // accquire mutex lock on the app
-    app.Services = append(app.Services, service)
-    app.Unlock() // release the accquired mutex
-    return service // is ready for usage
+import "sync"
+
+// A general purpose storage that is intended as a frequently and
+// easily embeddable piece of functionality used by many structures
+// within the framework. This intended as a simple, in-memory storage
+// exposing the key/value data model to its user. Values are all typed
+// as empty interface. Storage intended to hold few (not many) records.
+type Storage struct {
+
+    // The underlying data holder. A simple map of strings to untyped
+    // values. In order to be useful, values have to be casted (or type
+    // asserted) after they have been retrieved from the container. All
+    // access to the underlying container has to be regulated using by
+    // using the appropriate techniques to manage concurrent access.
+    Container map[string] interface {}
+
+    // A read-write mutually exclusive lock that is embedded in the
+    // storage structure for synchronizing concurrent access to the
+    // underlying data holder of the storage instance. This mutex must
+    // be used around all the data access operations to ensure that
+    // contained data does not get corrupted by concurrent access.
+    sync.RWMutex
 }

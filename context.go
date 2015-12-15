@@ -37,9 +37,9 @@ import "github.com/Sirupsen/logrus"
 type Context struct {
 
     // Syncronization primitive that should be used to lock on when
-    // performing any changes to the context instance. Especially it
-    // must be used when modifying the values in the Storage field of
-    // the context. Therefore, all write-access to the context should
+    // performing any changes to to context instance. Especially it
+    // must be used when modifying the values of structure fields of
+    // the context. Therefore, all write-access to application should
     // be made mutually exclusive, using this embedded mutex.
     sync.Mutex
 
@@ -83,7 +83,7 @@ type Context struct {
     // as well as application code, to store and retrieve any sort
     // of values that may be required by the application logic or the
     // framework logic. Beware, values are empty-interface typed.
-    Storage map[string] interface {}
+    Storage
 
     // Pointer to the HTTP requested that triggered the creation of
     // a context instance. This field will be automatically set by the

@@ -46,6 +46,7 @@ import "github.com/robfig/cron"
 // this function makes sure they have been passed and are all valid.
 // Generally, you should not be creating more than one application.
 func New (name, version string) *App {
+    var room = make(map[string] interface {})
     const url = "https://github.com/ts33kr/boot"
     const ename = "name is not of correct format"
     const eversion = "version is not valid semver"
@@ -54,6 +55,7 @@ func New (name, version string) *App {
     if !pattern.MatchString(name) { panic(ename) }
     if parsed.Validate() != nil { panic(eversion) }
     application := &App { Name: name, Version: parsed }
+    application.Storage = Storage { Container: room }
     application.CronEngine = cron.New() // create CRON
     application.Servers = make(map[string]*http.Server)
     application.Reference = shortuuid.New() // V4
@@ -80,7 +82,6 @@ func (app *App) Boot(env, level, root string) {
     app.RootDirectory = filepath.Clean(root)
     app.Journal = app.makeJournal(parsedLevel)
     app.Env = strings.ToLower(strings.TrimSpace(env))
-    app.Storage = make(map[string] interface {})
     app.Config = app.loadConfig(app.Env, "config")
     app.Booted = time.Now() // mark app as booted
     for _, p := range app.Providers { // setups
@@ -200,8 +201,8 @@ type App struct {
 
     // Syncronization primitive that should be used to lock on when
     // performing any changes to application instance. Especially it
-    // must be used when modifying the values in the Storage field of
-    // application. Therefore, all write-access to the context should
+    // must be used when modifying the values of structure fields of
+    // application. Therefore, all write-access to application should
     // be made mutually exclusive, using this embedded mutex.
     sync.Mutex
 
@@ -266,7 +267,7 @@ type App struct {
     // as well as the application code, to store and retrieve any sort
     // of values that may be required by the application logic or the
     // framework logic. Beware, values are empty-interface typed.
-    Storage map[string] interface {}
+    Storage
 
     // Supervisor instance to use with this application instance. A
     // supervisor is responsible for handling issues that might occur

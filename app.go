@@ -198,6 +198,13 @@ func (app *App) makeJournal(level logrus.Level) *logrus.Logger {
 // structure as well as the methods for a detailed information.
 type App struct {
 
+    // Syncronization primitive that should be used to lock on when
+    // performing any changes to application instance. Especially it
+    // must be used when modifying the values in the Storage field of
+    // application. Therefore, all write-access to the context should
+    // be made mutually exclusive, using this embedded mutex.
+    sync.Mutex
+
     // Name is a short string token that identifies the application.
     // It is advised to keep it machine & human readable: in a form of
     // of a slug - no spaces, all lower case, et cetera. The framework

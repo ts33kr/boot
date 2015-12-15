@@ -108,13 +108,6 @@ type Service struct {
     // unique identify and label some service for referencing it.
     Slug string
 
-    // Description of the service; it should be a short and succinct
-    // synopsis of what this service does, as a human readable string.
-    // Keep it short yet descriptive enough to understand a basic idea
-    // of what this service is intended for. This field should be set
-    // via corresponding API; please do not modify this directly.
-    About string
-
     // Mounting point of the service. All the endpoints in the current
     // service will share the same URL prefix, as it is specified when
     // building up a service structure. Therefore, an endpoint that is

@@ -42,18 +42,18 @@ import "github.com/robfig/cron"
 
 // Create and initialize a new application. This is a front gate for
 // the framework, since you should start by creating a new app struct.
-// Every application should have a valid slug (name) and a version. So
+// Every application should have a valid name (tag) and a version. So
 // this function makes sure they have been passed and are all valid.
 // Generally, you should not be creating more than one application.
-func New (slug, version string) *App {
+func New (name, version string) *App {
     const url = "https://github.com/ts33kr/boot"
-    const eslug = "slug is not of correct format"
+    const ename = "name is not of correct format"
     const eversion = "version is not valid semver"
     pattern := regexp.MustCompile("^[a-zA-Z0-9-_]+$")
     var parsed semver.Version = semver.MustParse(version)
-    if !pattern.MatchString(slug) { panic(eslug) }
+    if !pattern.MatchString(name) { panic(ename) }
     if parsed.Validate() != nil { panic(eversion) }
-    application := &App { Slug: slug, Version: parsed }
+    application := &App { Name: name, Version: parsed }
     application.CronEngine = cron.New() // create CRON
     application.Servers = make(map[string]*http.Server)
     application.Reference = shortuuid.New() // V4
@@ -103,8 +103,8 @@ func (app *App) Boot(env, level, root string) {
 // the HTTP requests handler. Method will block until all servers are
 // stopped. See boot.App and this method implementation for details.
 func (app *App) Deploy(sv Supervisor) {
-    var volume int = len(app.Services)
-    log := app.Journal.WithField("slug", app.Slug)
+    var volume int = len(app.Services) // size
+    log := app.Journal.WithField("name", app.Name)
     log = log.WithField("version", app.Version)
     log = log.WithField("ref", app.Reference) // UID
     log.Infof("deploying app with %v services", volume)
@@ -138,7 +138,7 @@ func (app *App) Deploy(sv Supervisor) {
 // instance. Config file should be a valid TOML file that has a bare
 // minimum data to make it a valid config. Method will panic in case if
 // there is an error loading the config or interpreting data inside.
-// Must have the app.slug and app.version fields defined correctly.
+// Must have the app.name and app.version fields defined correctly.
 // Refer to implementation code for more details on the loading.
 func (app *App) loadConfig(name, base string) *toml.TomlTree {
     const eload = "failed to load TOML config\n %v"
@@ -158,11 +158,11 @@ func (app *App) loadConfig(name, base string) *toml.TomlTree {
     req, ok := tree.Get("app.require").(*toml.TomlTree)
     if ok && req != nil { // check app requirements
         var avr string = app.Version.String()
-        slug := req.GetDefault("slug", app.Slug)
+        name := req.GetDefault("name", app.Name)
         version := req.GetDefault("version", avr)
         vr, _ := semver.ParseRange(version.(string))
         if vr == nil || !vr(app.Version) { panic(ever) }
-        if slug != app.Slug { panic(eforeign) }
+        if name != app.Name { panic(eforeign) }
     } // assume requirements are satisfied
     return tree // config tree is ready
 }
@@ -198,14 +198,14 @@ func (app *App) makeJournal(level logrus.Level) *logrus.Logger {
 // structure as well as the methods for a detailed information.
 type App struct {
 
-    // Slug is a short name (or tag) that identifies the application.
+    // Name is a short string token that identifies the application.
     // It is advised to keep it machine & human readable: in a form of
     // of a slug - no spaces, all lower case, et cetera. The framework
     // itself, as well as any other code could use this variable to
     // unique identify an instance of the specific application.
-    Slug string
+    Name string
 
-    // Complement the application slug; represents a version of the
+    // Complement the application name; represents a version of the
     // running application instance. The version format should conform
     // to the semver (Semantical Versioning) format. Typically, version
     // looks like 0.0.1, according to the semver formatting. Refer to

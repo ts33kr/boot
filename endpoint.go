@@ -92,6 +92,13 @@ func (ep *Endpoint) String() string { return ep.Pattern }
 // created or manipulated directly; use framework API for that.
 type Endpoint struct {
 
+    // Pattern that is used to match an HTTP request against this
+    // endpoint. Usually it is a mask of a partial URL (a path) that
+    // contains parameter placeholders and other pettern expressions.
+    // The exact details on the pattern format should be obtained from
+    // the router documentation; please refer to it for more info.
+    Pattern string
+
     // Map of HTTP methods (also known as verbs) that could be used
     // to invoke this endpoint through an HTTP request. Same endpoint
     // can respond to multiple HTTP methods, with possibly different
@@ -119,13 +126,6 @@ type Endpoint struct {
     // it and of course unblocking the call stack. The go-routine that
     // was used to invoke the operation will continue to spin though.
     Timeout time.Duration
-
-    // Pattern that is used to match an HTTP request against this
-    // endpoint. Usually it is a mask of a partial URL (a path) that
-    // contains parameter placeholders and other pettern expressions.
-    // The exact details on the pattern format should be obtained from
-    // the router documentation; please refer to it for more info.
-    Pattern string
 
     // Implementation of the endpoint. Should be BiasedLogic typed
     // function that implements the business logic this endpoint is

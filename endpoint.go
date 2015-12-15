@@ -71,12 +71,19 @@ func (ep *Endpoint) Satisfied(*Context) error { return nil }
 // based on the specific implementation of Operation interface.
 func (ep *Endpoint) OnionRings() []Middleware { return ep.Middleware }
 
-// Implementation of the Operation interface; report the error that
+// Get a source location of where the definition of this operation
+// has been made. This information may not always be available. It
+// will be accordingly reflected in the return struct in this case.
+// Maintenance of this information should be done within framework.
+// Please refer to the SourceLocation struct for more details.
+func (ep *Endpoint) Definition() SourceLocation { return ep.SourceLocation }
+
+// Implementation of the Operation interface; resolve the error that
 // might have occured during execution of the buiness logic implemented
 // by an endpoint. Depending on the application settings, this method
 // would typically let an HTTP client know about the error, by writing
 // to the Context.Responder with the appropriate code and message.
-func (ep *Endpoint) ReportIssue(context *Context, err error) {}
+func (ep *Endpoint) ResolveIssue(context *Context, err error) {}
 
 // String represenation of this operation, which is used mainly
 // for identification purposes when viewed by a human. The value
@@ -133,4 +140,11 @@ type Endpoint struct {
     // to this endpoint. A unique per-request context is going to be
     // passed to the function. See BiasedLogic type info for info.
     Business BiasedLogic
+
+    // Store source location of where the definition of this endpoint
+    // is implemented. This information may not always be available. It
+    // will be accordingly reflected in the return struct in this case.
+    // Maintenance of this information should be done within framework.
+    // Please refer to the SourceLocation struct for more details.
+    SourceLocation
 }

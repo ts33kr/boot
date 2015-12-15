@@ -43,7 +43,7 @@ func (pipe *Pipeline) Compile(app *App) {
                 case OperationTimeout: sv.OperationTimeout(c, op)
                 default: sv.OperationPaniced(c, op, err)
             } // we have dispatched the error value
-            pipe.Operation.ReportIssue(c, err)
+            pipe.Operation.ResolveIssue(c, err)
         } // operation application has finished
     } // innermost function actually executes op
     var middleware = make([]Middleware, 0) // alloc

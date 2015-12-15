@@ -60,6 +60,13 @@ var OperationTimeout = errors.New("operation timed out")
 // this value by the framework or app code for more information.
 var OperationUnavailable = errors.New("operation is not available")
 
+// Structure that points to where the definition of some application
+// code or entity was made, in terms of source code file and line number.
+// This info may not always be available; see the struct for details on
+// the available data. The structure can also be used to point to some
+// places within the application source code, such as panics, etc.
+type SourceLocation struct { File string; Line int; Ok bool }
+
 // Something that contains a piece of application's business logic and
 // knows how to invoke it. Any operation within the framework can only
 // be invoked in with regards to an instance of the context structure.
@@ -88,12 +95,19 @@ type Operation interface {
     // based on the specific implementation of Operation interface.
     OnionRings() []Middleware
 
-    // Request to make a report of an error that might have occured
+    // Ask the operation to resolve an error that might have occured
     // while applying (executing) the operation. The way how an error
-    // is reported entirely depends on the interface implementation.
+    // is resolved entirely depends on the interface implementation.
     // This method should be invoked with error that might have been
     // handed off by the Apply method, upon method's completion.
-    ReportIssue(*Context, error)
+    ResolveIssue(*Context, error)
+
+    // Get a source location of where the definition of this operation
+    // has been made. This information may not always be available. It
+    // will be accordingly reflected in the return struct in this case.
+    // Maintenance of this information should be done within framework.
+    // Please refer to the SourceLocation struct for more details.
+    Definition() SourceLocation
 
     // Check whether the operation is satisfied with supplied context.
     // If not - then it is safe to assume that the operation will not

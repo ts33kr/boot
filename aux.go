@@ -71,12 +71,19 @@ func (aux *Aux) Satisfied(*Context) error { return nil }
 // based on the specific implementation of Operation interface.
 func (aux *Aux) OnionRings() []Middleware { return aux.Middleware }
 
-// Implementation of the Operation interface; report the error that
+// Get a source location of where the definition of this operation
+// has been made. This information may not always be available. It
+// will be accordingly reflected in the return struct in this case.
+// Maintenance of this information should be done within framework.
+// Please refer to the SourceLocation struct for more details.
+func (aux *Aux) Definition() SourceLocation { return aux.SourceLocation }
+
+// Implementation of the Operation interface; resolve the error that
 // might have occured during execution of the buiness logic implemented
 // by an aux op. Depending on the application settings, this method
 // would typically journal the error to an application and/or context
-// journal and optionally use other mechanisms to expose the error.
-func (aux *Aux) ReportIssue(context *Context, err error) {}
+// journal and optionally use other mechanisms to handle the error.
+func (aux *Aux) ResolveIssue(context *Context, err error) {}
 
 // String represenation of this operation, which is used mainly
 // for identification purposes when viewed by a human. The value
@@ -154,4 +161,11 @@ type Aux struct {
     // requested. The context that will be passed in is determined
     // largely by the caller, so do not make any assumptions on it.
     Business BiasedLogic
+
+    // Store source location of where the definition of this auxiliary
+    // is implemented. This information may not always be available. It
+    // will be accordingly reflected in the return struct in this case.
+    // Maintenance of this information should be done within framework.
+    // Please refer to the SourceLocation struct for more details.
+    SourceLocation
 }

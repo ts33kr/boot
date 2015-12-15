@@ -113,13 +113,6 @@ type Endpoint struct {
     // This field should not be, as a general, manipulated directly.
     Methods map[string] bool
 
-    // Map of environment names that designates where this endpoint
-    // should be made available. If an application is being booted with
-    // the configured environment that is not in this slice - endpoint
-    // will not be available in that instance of the application. Refer
-    // to the App structure and its Env field for more information.
-    Available map[string] bool
-
     // Slice of middleware functions bound to this endpoint. These
     // middleware shall be executed prior to actually executing the
     // business logic embedded in the endpoint structure. For detailed

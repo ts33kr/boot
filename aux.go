@@ -148,13 +148,6 @@ type Aux struct {
     // about how the pipeline is construced. See its Up method.
     Pipeline
 
-    // Map of environment names that designates where this aux op
-    // should be made available. If an application is being booted with
-    // the configured environment that is not in this slice - aux op
-    // will not be available in that instance of the application. Refer
-    // to the App structure and its Env field for more information.
-    Available map[string] bool
-
     // Implementation of the aux. Should be BiasedLogic typed
     // function that implements the business logic this aux op is
     // representing. It is invoked when the aux operation is being

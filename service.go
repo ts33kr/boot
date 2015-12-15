@@ -25,7 +25,6 @@ package boot
 
 import "time"
 
-import "github.com/Sirupsen/logrus"
 import "github.com/renstrom/shortuuid"
 
 // Get the service up and running. This method is typically called
@@ -35,9 +34,7 @@ import "github.com/renstrom/shortuuid"
 // might have been marked for execution during service up-ing.
 func (srv *Service) Up(app *App) {
     context := &Context { App: app, Service: srv }
-    log := app.Journal.WithFields(logrus.Fields {
-        "service": srv.Prefix, // URL prefix used
-    }) // logger descriptively identifies a service
+    log := app.Journal.WithField("service", srv)
     if !srv.Available[app.Env] { // check the env
         log.Warn("is not available in this env")
         return // stop booting, is not available
@@ -75,9 +72,7 @@ func (srv *Service) Down(app *App) {
     if srv.Erected.IsZero() { return } // down
     srv.Erected = time.Time {} // set service down
     context := &Context { App: app, Service: srv }
-    log := app.Journal.WithFields(logrus.Fields {
-        "service": srv.Prefix, // URL prefix used
-    }) // logger descriptively identifies a service
+    log := app.Journal.WithField("service", srv)
     context.Created = time.Now() // creation stamp
     context.Journal = log // setup derived logger
     context.Reference = shortuuid.New() // V4
@@ -91,6 +86,13 @@ func (srv *Service) Down(app *App) {
         }
     }
 }
+
+// String represenation of this service, which is used mainly
+// for identification purposes when viewed by a human. The value
+// is not forced to be unique, but it should unambiguously state
+// the service's identity that can be used by a developer to
+// trace it down right to its implementation or definition.
+func (srv *Service) String() string { return srv.Prefix }
 
 // Service is a group of endpoints that are functionally related. It
 // also serves as a common data exchange bus between the endpoints that

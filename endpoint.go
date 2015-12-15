@@ -39,7 +39,7 @@ func (ep *Endpoint) Apply(context *Context) error {
     if e := ep.Satisfied(context); e != nil {
         elog := context.Journal.WithError(e)
         elog = elog.WithField("operation", ep)
-        elog.Warn("epiliary is not available")
+        elog.Warn("endpoint is not available")
         return OperationUnavailable // is N/A
     } // operation assured to be available
     go func() { // wrap as asynchronous code

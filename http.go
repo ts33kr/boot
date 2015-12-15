@@ -92,7 +92,7 @@ func (app *App) assembleRouter() *denco.Router {
             pipe := &Pipeline {Operation: ep, Service: srv}
             pipe.Compile(app) // seal up pipeline instance
             log := app.Journal.WithField("url", mask)
-            log = log.WithField("service", srv.Slug)
+            log = log.WithField("service", srv.Prefix)
             log.Debug("mounting endpoint into router")
             record := denco.NewRecord(mask, pipe)
             records = append(records, record)

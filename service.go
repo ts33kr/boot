@@ -36,8 +36,7 @@ import "github.com/renstrom/shortuuid"
 func (srv *Service) Up(app *App) {
     context := &Context { App: app, Service: srv }
     log := app.Journal.WithFields(logrus.Fields {
-        "service": srv.Slug, // short service name
-        "prefix": srv.Prefix, // URL prefix used
+        "service": srv.Prefix, // URL prefix used
     }) // logger descriptively identifies a service
     if !srv.Available[app.Env] { // check the env
         log.Warn("is not available in this env")
@@ -77,8 +76,7 @@ func (srv *Service) Down(app *App) {
     srv.Erected = time.Time {} // set service down
     context := &Context { App: app, Service: srv }
     log := app.Journal.WithFields(logrus.Fields {
-        "service": srv.Slug, // short service name
-        "prefix": srv.Prefix, // URL prefix used
+        "service": srv.Prefix, // URL prefix used
     }) // logger descriptively identifies a service
     context.Created = time.Now() // creation stamp
     context.Journal = log // setup derived logger
@@ -100,13 +98,6 @@ func (srv *Service) Down(app *App) {
 // as well as use it for coordination. Besides this, the data structure
 // also contains fields related to the internals of the framework.
 type Service struct {
-
-    // Slug is a short name (or tag) that identifies specific service.
-    // It is advised to keep it machine & human readable: in a form of
-    // of a slug - no spaces, all lower case, et cetera. The framework
-    // itself, as well as any other code could use this variable to
-    // unique identify and label some service for referencing it.
-    Slug string
 
     // Mounting point of the service. All the endpoints in the current
     // service will share the same URL prefix, as it is specified when

@@ -41,6 +41,9 @@ func (app *App) Service(origin func(*Service)) *Service {
     service.Storage = Storage { Container: room }
     service.Auxes = make(map[string] *Aux)
     origin(service) // service is made right here
+    if len(service.Available) == 0 { // no envs?
+        service.Available[app.Env] = true
+    } // ensure at least one env is in the map
     if len(service.Prefix) == 0 { // empty prefix
         panic("missing mandatory service prefix")
     } // looks like service was properly assembled

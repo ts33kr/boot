@@ -24,6 +24,7 @@
 package boot
 
 import "time"
+import "sync"
 
 import "github.com/renstrom/shortuuid"
 
@@ -100,6 +101,13 @@ func (srv *Service) String() string { return srv.Prefix }
 // as well as use it for coordination. Besides this, the data structure
 // also contains fields related to the internals of the framework.
 type Service struct {
+
+    // Syncronization primitive that should be used to lock on when
+    // performing any changes to the service instance. Especially it
+    // must be used when modifying the values of structure fields of
+    // a service. Therefore, all write-access to application should
+    // be made mutually exclusive, using this embedded mutex.
+    sync.Mutex
 
     // Mounting point of the service. All the endpoints in the current
     // service will share the same URL prefix, as it is specified when

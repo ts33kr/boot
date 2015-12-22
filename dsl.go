@@ -23,6 +23,36 @@
 
 package boot
 
+import "time"
+
+// Create and mount a new endpoint into the current service. Method
+// takes the origin function that will take the endpoint instance and
+// properly set it up. An endpoint instance itself will be allocated by
+// this method and then automatically mounted within the service. Any
+// modifications could be made to the endpoint instance afterwards.
+func (srv *Service) Endpoint(origin func(*Endpoint)) *Endpoint {
+    if !srv.Erected.IsZero() { // service is up?
+        panic("refusing to modify erected service")
+    } // service is not yet up; we are good to go
+    if origin == nil { // origin points to nowhere?
+        panic("missing the endpoint origin function")
+    } // origin is intact, we shall invoke it later
+    var endpoint *Endpoint = &Endpoint {} // allocate
+    endpoint.Methods = make(map[string] bool) // HTTP
+    endpoint.Timeout = time.Second * 3 // default!
+    origin(endpoint) // endpoint is made right here
+    if len(endpoint.Methods) == 0 { // no methods?
+        endpoint.Methods["GET"] = true
+    } // ensure at least one env is in the map
+    if len(endpoint.Pattern) == 0 { // empty URL
+        panic("missing URL pattern for endpoint")
+    } // looks like endpoint was properly assembled
+    srv.Lock() // accquire mutex lock on the app
+    srv.Endpoints = append(srv.Endpoints, endpoint)
+    srv.Unlock() // release the accquired mutex
+    return endpoint // is ready for usage
+}
+
 // Create and install a new service into the current app. Method
 // takes the origin function that will take the service instance and
 // properly set it up. The service instance itself will be allocated by
@@ -32,7 +62,7 @@ func (app *App) Service(origin func(*Service)) *Service {
     if !app.Booted.IsZero() { // app is booted?
         panic("refusing to modify the booted app")
     } // app is not yet booted; we are good to go
-    if origin == nil { // maker points to nowhere?
+    if origin == nil { // origin points to nowhere?
         panic("missing the service origin function")
     } // origin is intact, we shall invoke it later
     var service *Service = &Service {} // allocate

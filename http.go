@@ -102,7 +102,7 @@ func (app *App) collectRecords(records map[string] []denco.Record) {
 // Will be used by the application to match incoming requests against
 // the endpoints that are meant to handle those requests. Current way
 // of implementation uses Denco library for routing. Please see the
-// Application.Routers field, as well as the library documentation.
+// Application.routers field, as well as the library documentation.
 func (app *App) assembleRouters() map[string] *denco.Router {
     var volume int = 0 // how many records?
     routers := make(map[string] *denco.Router)

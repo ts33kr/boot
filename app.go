@@ -95,7 +95,7 @@ func (app *App) Boot(env, level, root string) {
     log = log.WithField("level", parsedLevel)
     log.Info("application has been booted")
     app.CronEngine.Start() // launch CRON
-    app.router = app.assembleRouter()
+    app.routers = app.assembleRouters()
 }
 
 // Deploy the application. Spawn one or more of HTTP(s) servers, as
@@ -276,12 +276,12 @@ type App struct {
     // Normally, a default supervisor should be used, as it is.
     Supervisor Supervisor
 
-    // An HTTP request router that the app will use to match incoming
-    // requests against the registered endpoints that should handle the
-    // requests. The framework will build and maintain this router
+    // HTTP request routers that the app will use to match incoming
+    // requests against the registered endpoints that must handle the
+    // requests. The framework will build and maintain the routers
     // automatically; normally you should not be refering to this
     // field directly. See Denco library docs for more details.
-    router *denco.Router
+    routers map[string] *denco.Router
 
     // Configuration data for the application instance. This will be
     // populated by the framework, when the app is being launched. It

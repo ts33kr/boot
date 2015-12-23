@@ -53,19 +53,19 @@ func (app *App) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
         "ip": r.RemoteAddr, // remote host & port
     }) // the logger is compiled and ready for use
     log.Info("accepted an incoming HTTP request")
-    rec, ps, hit := app.router.Lookup(r.RequestURI)
+    if app.routers[r.Method] == nil { // allowed?
+        log.Warn("request method is not allowed")
+        app.Supervisor.MethodNotAllowed(context)
+        return // we are done with this request
+    } // ok, looks like request method fits in
+    router := app.routers[r.Method] // accquire
+    rec, ps, hit := router.Lookup(r.RequestURI)
     if !hit { // request did not match any endpoint
         log.Warn("request did not match any route")
         app.Supervisor.EndpointNotFound(context)
         return // we are done with this request
     } // ok, looks like request match an endpoint
     var pipe *Pipeline = rec.(*Pipeline) // cast
-    var ep *Endpoint = pipe.Operation.(*Endpoint)
-    if !ep.Methods[r.Method] { // method allowed?
-        log.Warn("request method is not allowed")
-        app.Supervisor.MethodNotAllowed(context)
-        return // we are done with this request
-    } // ok, looks like request method fits in
     context.Data = make(map[string] string)
     context.Service = pipe.Service // restore
     context.Journal = log // structured logger
@@ -75,16 +75,12 @@ func (app *App) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
     log.Info("finish accepted HTTP request")
 }
 
-// Create and configure an implementation of a HTTP request router.
-// It will be used by the application to match incoming requests against
-// the endpoints that are meant to handle those requests. Current way
-// of implementation uses Denco library for routing. Please see the
-// Application.Router field, as well as the library documentation.
-func (app *App) assembleRouter() *denco.Router {
-    var router *denco.Router = denco.New()
-    const mloaded = "registered %v URL patterns"
-    app.Journal.Info("assembling request router")
-    records := make([]denco.Record, 0) // alloc
+// Given the map of HTTP methods to a vector of routables that may
+// respond to the specific verb, fill it with the relevant records.
+// These records shall be built out of the endpoints registered with
+// the application, inside of its services. Please refer to methods
+// that build up the HTTP routers for more information and details.
+func (app *App) collectRecords(records map[string] []denco.Record) {
     for _, srv := range app.Services {
         for _, ep := range srv.Endpoints {
             epp := strings.TrimPrefix(ep.Pattern, "/")
@@ -95,15 +91,36 @@ func (app *App) assembleRouter() *denco.Router {
             log = log.WithField("service", srv)
             log.Debug("mounting endpoint into router")
             record := denco.NewRecord(mask, pipe)
-            records = append(records, record)
+            for m, _ := range ep.Methods { // HTTP verbs
+                records[m] = append(records[m], record)
+            } // vector of records per each method
         } // inner loop actually builds records
-    } // build the router and check for errors
-    if err := router.Build(records); err != nil {
-        app.Journal.Fatal("failed to build router")
-        panic(err) // inability to build is fatal
-    } // if built successfully, return a router
-    app.Journal.Infof(mloaded, len(records))
-    return router // is ready for use
+    } // finish up with collecting the records
+}
+
+// Create and configure an implementation of the HTTP request routers.
+// Will be used by the application to match incoming requests against
+// the endpoints that are meant to handle those requests. Current way
+// of implementation uses Denco library for routing. Please see the
+// Application.Routers field, as well as the library documentation.
+func (app *App) assembleRouters() map[string] *denco.Router {
+    var volume int = 0 // how many records?
+    routers := make(map[string] *denco.Router)
+    records := make(map[string] []denco.Record)
+    const mloaded = "registered %v URL patterns"
+    app.Journal.Info("assembling request routers")
+    app.collectRecords(records) // build records
+    for method, vector := range records { // walk
+        routers[method] = denco.New() // allocating
+        err := routers[method].Build(vector) // build
+        if sz := len(vector); sz > volume { volume = sz }
+        if err != nil { // check if built was successful
+            app.Journal.Fatal("failed to build router")
+            panic(err) // inability to build is fatal
+        } // if built successfully, move to the next
+    } // done with building routers per HTTP method
+    app.Journal.Infof(mloaded, volume) // verbose
+    return routers // routers are ready for use
 }
 
 // Find all HTTPS application server declarations in the app config

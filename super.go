@@ -88,8 +88,8 @@ type Supervisor interface {
     // routines, such as writing to the application journal.
     EndpointNotFound(*Context)
 
-    // Invoked when an incoming HTTP request has been routed to one
-    // endpoint while that endpoint does not allow for an HTTP method
+    // Invoked when an incoming HTTP request could not be routed to an
+    // endpoint because the application does not support an HTTP method
     // (also known as verb) that have been requested. This method should
     // respond to the client with the corresponding message and maybe
     // perform other, internal routines, such as write app journal.
